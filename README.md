@@ -452,5 +452,5 @@ Detailed technical documentation is available in the [`docs/`](docs/) directory:
 ---
 
 <div align="center">
-  <sub>TravelEase • Software Construction Course Capstone • Developed with ❤️</sub>
+  <sub>TravelEase • Software Construction Course Capstone • Developed with ❤️ by Alaa Eriby </sub>
 </div>
