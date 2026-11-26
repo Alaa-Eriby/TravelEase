@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+
+{% block title %}Curated Travel Packages – TravelEase{% endblock %}
+
+{% block content %}
+<div class="py-5 bg-white border-bottom">
+  <div class="container text-center">
+    <span class="badge bg-secondary-subtle text-secondary px-3 py-1 rounded-pill fw-bold mb-2">All-Inclusive Journeys</span>
+    <h1 class="fw-bold text-dark">Explore Curated Travel Packages</h1>
+    <p class="lead text-muted col-md-6 mx-auto">
+      Fully planned guided trips with guaranteed departures, included accommodations, and expert guides.
+    </p>
+  </div>
+</div>
+
+<div class="container py-5">
+  <!-- Search & Filter Card -->
+  <div class="card border-0 shadow-sm rounded-4 p-4 mb-5 bg-white">
+    <form method="GET" class="row g-3 align-items-center">
+      <div class="col-md-3">
+        <label class="form-label small fw-bold text-muted">Package Title / Keyword</label>
+        <input type="text" name="q" class="form-control" placeholder="Search packages..." value="{{ query }}">
+      </div>
+      <div class="col-md-3">
+        <label class="form-label small fw-bold text-muted">Destination</label>
+        <select name="destination" class="form-select">
+          <option value="">All Destinations</option>
+          {% for d in destinations %}
+            <option value="{{ d.id }}" {% if selected_destination == d.id|stringformat:"s" %}selected{% endif %}>{{ d.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-2">
+        <label class="form-label small fw-bold text-muted">Duration (Days)</label>
+        <input type="number" name="duration" class="form-control" placeholder="e.g. 7" value="{{ duration }}">
+      </div>
+      <div class="col-md-2">
+        <label class="form-label small fw-bold text-muted">Max Price ($)</label>
+        <input type="number" name="max_price" class="form-control" placeholder="Budget limit" value="{{ max_price }}">
+      </div>
+      <div class="col-md-2 d-grid">
+        <label class="form-label d-none d-md-block">&nbsp;</label>
+        <button type="submit" class="btn btn-primary-te">
+          <i class="bi bi-funnel-fill me-1"></i> Filter
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Packages List -->
+  <div class="row g-4">
+    {% for pkg in packages %}
+      <div class="col-lg-6">
+        <div class="card travel-card h-100 flex-md-row overflow-hidden">
+          <div class="col-md-5 position-relative">
+            <img src="{{ pkg.display_image }}" alt="{{ pkg.title }}" class="h-100 w-100 object-fit-cover" style="min-height: 250px;">
+            <span class="badge bg-dark text-white badge-float-left">
+              <i class="bi bi-clock me-1"></i>{{ pkg.duration_days }} Days
+            </span>
+          </div>
+          <div class="col-md-7 p-4 d-flex flex-column justify-content-between">
+            <div>
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <span class="text-secondary small fw-bold">
+                  <i class="bi bi-geo-alt me-1"></i>{{ pkg.destination.name }}
+                </span>
+                <span class="badge bg-success-subtle text-success">Verified</span>
+              </div>
+              <h5 class="fw-bold text-dark mb-2">{{ pkg.title }}</h5>
+              <p class="text-muted small mb-3">{{ pkg.description|truncatewords:18 }}</p>
+              
+              <div class="mb-3">
+                <small class="fw-bold text-dark d-block mb-1">Inclusions:</small>
+                <div class="d-flex flex-wrap gap-1">
+                  {% for s in pkg.services_list|slice:":3" %}
+                    <span class="badge bg-light text-muted border small">{{ s }}</span>
+                  {% endfor %}
+                </div>
+              </div>
+            </div>
+
+            <div class="d-flex justify-content-between align-items-center pt-3 border-top mt-auto">
+              <div>
+                <small class="text-muted d-block">Starting from</small>
+                <span class="h4 fw-bold text-primary mb-0">${{ pkg.price_per_person }}</span>
+              </div>
+              <div class="d-flex gap-2">
+                <a href="{% url 'packages:detail' pkg.id %}" class="btn btn-sm btn-outline-secondary">Itinerary</a>
+                <a href="{% url 'packages:booking_wizard' pkg.id %}" class="btn btn-sm btn-accent-te">Book Now</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    {% empty %}
+      <div class="col-12 text-center py-5">
+        <i class="bi bi-backpack text-muted display-4 d-block mb-3"></i>
+        <h4 class="fw-bold text-dark">No travel packages match your filters</h4>
+        <p class="text-muted">Try broadening your search or clearing the filters.</p>
+        <a href="{% url 'packages:list' %}" class="btn btn-outline-te">Reset Filters</a>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

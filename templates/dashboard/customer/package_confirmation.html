@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+
+{% block title %}Booking Confirmation – {{ booking.booking_reference }}{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-9">
+      <!-- Confirmation Banner -->
+      <div class="card border-0 shadow-lg rounded-4 overflow-hidden mb-4">
+        <div class="p-4 p-md-5 bg-success text-white text-center">
+          <div class="display-3 mb-2"><i class="bi bi-patch-check-fill"></i></div>
+          <h2 class="fw-bold mb-1">Reservation Confirmed!</h2>
+          <p class="lead opacity-75 mb-3">Thank you for booking with TravelEase. Your travel credentials have been verified.</p>
+          <div class="bg-white text-dark d-inline-block px-4 py-2 rounded-pill shadow-sm">
+            <span class="small text-muted me-2">Unique Booking Reference:</span>
+            <strong class="fs-5 text-primary">{{ booking.booking_reference }}</strong>
+          </div>
+        </div>
+
+        <div class="p-4 p-md-5 bg-white">
+          <div class="row g-4 mb-4">
+            <div class="col-md-6">
+              <h6 class="fw-bold text-muted text-uppercase mb-2">Trip Overview</h6>
+              <h4 class="fw-bold text-dark mb-1">{{ booking.departure.package.title }}</h4>
+              <p class="text-secondary mb-2"><i class="bi bi-geo-alt me-1 text-danger"></i>{{ booking.departure.package.destination.name }}, {{ booking.departure.package.destination.country.name }}</p>
+              <span class="badge bg-primary-subtle text-primary">{{ booking.departure.package.duration_days }} Days Expedition</span>
+            </div>
+            <div class="col-md-6 border-start-md ps-md-4">
+              <h6 class="fw-bold text-muted text-uppercase mb-2">Travel Schedule</h6>
+              <p class="mb-1"><strong>Departure Date:</strong> {{ booking.departure.departure_date|date:"l, F d, Y" }}</p>
+              <p class="mb-1"><strong>Return Date:</strong> {{ booking.departure.return_date|date:"l, F d, Y" }}</p>
+              <p class="mb-0"><strong>Status:</strong> <span class="badge bg-success">{{ booking.get_status_display }}</span></p>
+            </div>
+          </div>
+
+          <hr>
+
+          <!-- Travelers Manifest -->
+          <h5 class="fw-bold text-primary mb-3"><i class="bi bi-people-fill me-2"></i>Passenger Manifest</h5>
+          <div class="table-responsive mb-4">
+            <table class="table table-bordered align-middle">
+              <thead class="table-light">
+                <tr>
+                  <th>#</th>
+                  <th>Full Name</th>
+                  <th>Passport Number</th>
+                  <th>Age</th>
+                  <th>Gender</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for t in booking.travelers.all %}
+                  <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td><strong>{{ t.first_name }} {{ t.last_name }}</strong></td>
+                    <td>{{ t.passport_number|default:"N/A" }}</td>
+                    <td>{{ t.age }}</td>
+                    <td>{{ t.get_gender_display }}</td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Academic Payment Receipt -->
+          {% if payment %}
+            <div class="bg-light p-4 rounded-3 border mb-4">
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <h6 class="fw-bold text-dark mb-0"><i class="bi bi-receipt me-2"></i>Payment Receipt (Safe Academic Simulation)</h6>
+                <span class="badge bg-success">PAID - ${{ payment.amount }} {{ payment.currency }}</span>
+              </div>
+              <div class="row g-2 small text-muted">
+                <div class="col-md-4"><strong>Transaction ID:</strong> <code>{{ payment.transaction_id }}</code></div>
+                <div class="col-md-4"><strong>Method:</strong> {{ payment.get_payment_method_display }}</div>
+                <div class="col-md-4"><strong>Simulated Card:</strong> &bull;&bull;&bull;&bull; {{ payment.card_last_four }}</div>
+              </div>
+            </div>
+          {% endif %}
+
+          <div class="d-flex justify-content-between align-items-center pt-3 border-top">
+            <a href="{% url 'bookings:customer_dashboard' %}" class="btn btn-outline-secondary">
+              <i class="bi bi-arrow-left me-1"></i> Back to Dashboard
+            </a>
+            <button onclick="window.print()" class="btn btn-primary-te">
+              <i class="bi bi-printer-fill me-1"></i> Print Confirmation
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

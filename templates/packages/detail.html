@@ -1,0 +1,133 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ package.title }} – TravelEase{% endblock %}
+
+{% block content %}
+<!-- Package Header Banner -->
+<div class="position-relative" style="height: 380px; overflow: hidden;">
+  <img src="{{ package.display_image }}" alt="{{ package.title }}" class="w-100 h-100 object-fit-cover">
+  <div class="position-absolute top-0 start-0 w-100 h-100" style="background: linear-gradient(180deg, rgba(15, 36, 68, 0.4) 0%, rgba(15, 36, 68, 0.9) 100%);"></div>
+  <div class="position-absolute bottom-0 start-0 w-100 p-4 p-md-5 text-white">
+    <div class="container">
+      <span class="badge bg-warning text-dark mb-2 px-3 py-1 fw-bold fs-6">
+        <i class="bi bi-clock me-1"></i>{{ package.duration_days }} Days Expedition
+      </span>
+      <h1 class="display-4 fw-bold text-white mb-2">{{ package.title }}</h1>
+      <p class="lead text-white-50 mb-0">
+        <i class="bi bi-geo-alt me-1"></i>{{ package.destination.name }}, {{ package.destination.country.name }}
+      </p>
+    </div>
+  </div>
+</div>
+
+<div class="container py-5">
+  <div class="row g-5">
+    <!-- Main Content -->
+    <div class="col-lg-8">
+      <!-- Overview Card -->
+      <div class="card border-0 shadow-sm rounded-4 p-4 p-md-5 mb-4 bg-white">
+        <h3 class="fw-bold text-primary mb-3">Expedition Overview</h3>
+        <p class="text-secondary leading-relaxed fs-6 mb-4">{{ package.description }}</p>
+
+        <!-- Inclusions & Exclusions -->
+        <div class="row g-4 mt-2">
+          <div class="col-md-6">
+            <div class="p-3 rounded-3 bg-success-subtle h-100 border border-success-subtle">
+              <h6 class="fw-bold text-success mb-3"><i class="bi bi-check-circle-fill me-2"></i>Included Services</h6>
+              <ul class="list-unstyled small mb-0">
+                {% for service in package.services_list %}
+                  <li class="mb-2 d-flex align-items-start">
+                    <i class="bi bi-check2 text-success me-2 mt-1"></i>
+                    <span>{{ service }}</span>
+                  </li>
+                {% endfor %}
+              </ul>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="p-3 rounded-3 bg-danger-subtle h-100 border border-danger-subtle">
+              <h6 class="fw-bold text-danger mb-3"><i class="bi bi-x-circle-fill me-2"></i>Excluded Services</h6>
+              <p class="small text-muted mb-0">{{ package.excluded_services|default:"Personal expenditures, souvenirs, and discretionary gratuities." }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Upcoming Guaranteed Departures -->
+      <div class="card border-0 shadow-sm rounded-4 p-4 p-md-5 mb-4 bg-white">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <h3 class="fw-bold text-primary mb-0">Available Departures</h3>
+          <span class="badge bg-secondary px-3 py-2 rounded-pill">Guaranteed Dates</span>
+        </div>
+
+        <div class="table-responsive">
+          <table class="table table-hover align-middle">
+            <thead class="table-light">
+              <tr>
+                <th>Departure Date</th>
+                <th>Return Date</th>
+                <th>Capacity &amp; Status</th>
+                <th>Price / Person</th>
+                <th class="text-end">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for dep in departures %}
+                <tr>
+                  <td><span class="fw-bold text-dark"><i class="bi bi-calendar-event me-2 text-primary"></i>{{ dep.departure_date|date:"M d, Y" }}</span></td>
+                  <td><span class="text-muted">{{ dep.return_date|date:"M d, Y" }}</span></td>
+                  <td>
+                    {% if dep.available_seats > 5 %}
+                      <span class="badge bg-success-subtle text-success">{{ dep.available_seats }} Seats Available</span>
+                    {% elif dep.available_seats > 0 %}
+                      <span class="badge bg-warning-subtle text-warning">{{ dep.available_seats }} Seats Left!</span>
+                    {% else %}
+                      <span class="badge bg-danger-subtle text-danger">Sold Out</span>
+                    {% endif %}
+                  </td>
+                  <td><span class="fw-bold text-primary">${{ dep.current_price }}</span></td>
+                  <td class="text-end">
+                    {% if dep.is_available %}
+                      <a href="{% url 'packages:booking_wizard' package.id %}?dep={{ dep.id }}" class="btn btn-sm btn-accent-te">Book Departure</a>
+                    {% else %}
+                      <button class="btn btn-sm btn-secondary" disabled>Unavailable</button>
+                    {% endif %}
+                  </td>
+                </tr>
+              {% empty %}
+                <tr>
+                  <td colspan="5" class="text-center text-muted py-3">No upcoming departures listed at this moment.</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Booking Sidebar -->
+    <div class="col-lg-4">
+      <div class="card border-0 shadow-sm rounded-4 p-4 bg-white sticky-top" style="top: 100px;">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <small class="text-muted">Price per traveler</small>
+          <span class="h3 fw-bold text-primary mb-0">${{ package.price_per_person }}</span>
+        </div>
+        <hr>
+        <div class="mb-4">
+          <h6 class="fw-bold text-dark mb-2">Responsible Agency:</h6>
+          <p class="text-muted small mb-0"><i class="bi bi-building me-1"></i>{{ package.agent.agent_profile.agency_name|default:package.agent.get_full_name }}</p>
+          <small class="text-success"><i class="bi bi-patch-check-fill me-1"></i>License Verified ({{ package.agent.agent_profile.license_number|default:"LIC-VERIFIED" }})</small>
+        </div>
+
+        <a href="{% url 'packages:booking_wizard' package.id %}" class="btn btn-accent-te btn-lg w-100 mb-3">
+          <i class="bi bi-airplane-fill me-2"></i> Proceed to Reservation
+        </a>
+        <div class="alert alert-light border small text-muted mb-0">
+          <i class="bi bi-shield-check text-success me-1"></i>
+          Concurrency-safe checkout with instant booking confirmation.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+
+{% block title %}User Management – Admin Panel{% endblock %}
+
+{% block content %}
+<div class="py-4 bg-white border-bottom">
+  <div class="container d-flex justify-content-between align-items-center">
+    <div>
+      <a href="{% url 'core:admin_dashboard' %}" class="small text-muted text-decoration-none">&larr; Back to Admin Panel</a>
+      <h2 class="fw-bold text-dark mb-0">User &amp; Role Management</h2>
+    </div>
+  </div>
+</div>
+
+<div class="container py-5">
+  <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <div class="d-flex gap-2">
+        <a href="{% url 'core:admin_users' %}" class="btn btn-sm {% if not role_filter %}btn-primary-te{% else %}btn-outline-secondary{% endif %}">All Users ({{ users.count }})</a>
+        <a href="{% url 'core:admin_users' %}?role=CUSTOMER" class="btn btn-sm {% if role_filter == 'CUSTOMER' %}btn-primary-te{% else %}btn-outline-secondary{% endif %}">Customers</a>
+        <a href="{% url 'core:admin_users' %}?role=AGENT" class="btn btn-sm {% if role_filter == 'AGENT' %}btn-primary-te{% else %}btn-outline-secondary{% endif %}">Travel Agents</a>
+        <a href="{% url 'core:admin_users' %}?role=ADMIN" class="btn btn-sm {% if role_filter == 'ADMIN' %}btn-primary-te{% else %}btn-outline-secondary{% endif %}">Administrators</a>
+      </div>
+      <a href="/admin/accounts/user/add/" target="_blank" class="btn btn-sm btn-accent-te">+ Add User</a>
+    </div>
+
+    <div class="table-responsive">
+      <table class="table table-hover align-middle">
+        <thead class="table-light">
+          <tr>
+            <th>Username</th>
+            <th>Full Name</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>Role</th>
+            <th>Date Joined</th>
+            <th class="text-end">Django Admin</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for u in users %}
+            <tr>
+              <td><strong>{{ u.username }}</strong></td>
+              <td>{{ u.get_full_name|default:"-" }}</td>
+              <td>{{ u.email }}</td>
+              <td>{{ u.phone|default:"-" }}</td>
+              <td>
+                {% if u.role == 'ADMIN' or u.is_superuser %}
+                  <span class="badge bg-danger">Administrator</span>
+                {% elif u.role == 'AGENT' %}
+                  <span class="badge bg-success">Travel Agent</span>
+                {% else %}
+                  <span class="badge bg-primary">Customer</span>
+                {% endif %}
+              </td>
+              <td><small class="text-muted">{{ u.date_joined|date:"M d, Y" }}</small></td>
+              <td class="text-end">
+                <a href="/admin/accounts/user/{{ u.id }}/change/" target="_blank" class="btn btn-sm btn-outline-secondary">Edit in Admin</a>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

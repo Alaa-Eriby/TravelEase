@@ -1,0 +1,328 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}TravelEase – Discover & Book Smart Travel Experiences{% endblock %}
+
+{% block content %}
+<!-- Hero Section with Live Search Form -->
+<section class="hero-section">
+  <div class="container">
+    <div class="row align-items-center mb-5">
+      <div class="col-lg-8 mx-auto text-center">
+        <span class="badge bg-warning text-dark px-3 py-2 rounded-pill fw-bold mb-3">
+          <i class="bi bi-stars me-1"></i> Next-Gen Tourism &amp; Travel Booking
+        </span>
+        <h1 class="display-4 fw-extrabold text-white mb-3" style="font-weight: 800;">
+          Explore Breathtaking Worlds With Complete Ease
+        </h1>
+        <p class="lead text-white-50 mb-4">
+          Discover verified travel packages, boutique hotels, and unforgettable adventures across the world's most captivating destinations.
+        </p>
+      </div>
+    </div>
+
+    <!-- Search Box Card -->
+    <div class="row">
+      <div class="col-lg-10 mx-auto">
+        <div class="search-box-card">
+          <form action="{% url 'packages:list' %}" method="GET" class="row g-3 align-items-center">
+            <div class="col-md-4">
+              <label class="form-label small fw-bold text-muted mb-1"><i class="bi bi-geo-alt me-1 text-primary"></i>Destination / Keyword</label>
+              <input type="text" name="q" class="form-control form-control-lg fs-6" placeholder="Where do you want to go?">
+            </div>
+            <div class="col-md-3">
+              <label class="form-label small fw-bold text-muted mb-1"><i class="bi bi-globe me-1 text-primary"></i>Country</label>
+              <select name="country" class="form-select form-select-lg fs-6">
+                <option value="">All Countries</option>
+                {% for country in countries %}
+                  <option value="{{ country.id }}">{{ country.name }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="col-md-3">
+              <label class="form-label small fw-bold text-muted mb-1"><i class="bi bi-currency-dollar me-1 text-primary"></i>Max Price ($USD)</label>
+              <input type="number" name="max_price" class="form-control form-control-lg fs-6" placeholder="Budget limit (e.g. 2500)">
+            </div>
+            <div class="col-md-2 d-grid">
+              <label class="form-label d-none d-md-block text-white mb-1">&nbsp;</label>
+              <button type="submit" class="btn btn-accent-te btn-lg fs-6 py-2">
+                <i class="bi bi-search me-1"></i> Find Trips
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Live Database Statistics Bar -->
+<section class="py-4 bg-white border-bottom shadow-sm">
+  <div class="container">
+    <div class="row g-3 text-center">
+      <div class="col-6 col-md-3">
+        <h3 class="fw-bold text-primary mb-0">{{ stats.destinations_count }}</h3>
+        <span class="text-muted small fw-semibold">Global Destinations</span>
+      </div>
+      <div class="col-6 col-md-3">
+        <h3 class="fw-bold text-primary mb-0">{{ stats.packages_count }}</h3>
+        <span class="text-muted small fw-semibold">Curated Packages</span>
+      </div>
+      <div class="col-6 col-md-3">
+        <h3 class="fw-bold text-primary mb-0">{{ stats.hotels_count }}</h3>
+        <span class="text-muted small fw-semibold">Handpicked Hotels</span>
+      </div>
+      <div class="col-6 col-md-3">
+        <h3 class="fw-bold text-primary mb-0">{{ stats.happy_travelers_count }}</h3>
+        <span class="text-muted small fw-semibold">Registered Travelers</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Why Choose TravelEase Section -->
+<section class="py-5">
+  <div class="container py-4">
+    <div class="text-center mb-5">
+      <h6 class="text-uppercase text-secondary fw-bold letter-spacing-1">Why Travel With Us</h6>
+      <h2 class="fw-bold text-dark">Designed for Effortless &amp; Trustworthy Journeys</h2>
+      <p class="text-muted col-md-6 mx-auto">We combine modern technology with seasoned travel specialists to give you seamless trip planning.</p>
+    </div>
+
+    <div class="row g-4">
+      <div class="col-md-3">
+        <div class="feature-box">
+          <div class="feature-icon-wrapper">
+            <i class="bi bi-shield-check"></i>
+          </div>
+          <h5 class="fw-bold">100% Verified Providers</h5>
+          <p class="text-muted small mb-0">Every travel agent and hotel is rigorously verified for safety, quality, and licensing.</p>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="feature-box">
+          <div class="feature-icon-wrapper">
+            <i class="bi bi-calendar2-check"></i>
+          </div>
+          <h5 class="fw-bold">Instant Capacity Check</h5>
+          <p class="text-muted small mb-0">Live real-time reservation locks prevent overbooking and guarantee your seats.</p>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="feature-box">
+          <div class="feature-icon-wrapper">
+            <i class="bi bi-tag-fill"></i>
+          </div>
+          <h5 class="fw-bold">Transparent Pricing</h5>
+          <p class="text-muted small mb-0">Clear breakdown of inclusions, exclusions, and total cost with zero hidden fees.</p>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="feature-box">
+          <div class="feature-icon-wrapper">
+            <i class="bi bi-headset"></i>
+          </div>
+          <h5 class="fw-bold">Dedicated Concierge</h5>
+          <p class="text-muted small mb-0">Full traveler dashboard with self-service cancellations and booking tracking.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Featured Destinations -->
+<section class="py-5 bg-white">
+  <div class="container py-4">
+    <div class="d-flex justify-content-between align-items-end mb-4">
+      <div>
+        <h6 class="text-uppercase text-secondary fw-bold">Top Picks</h6>
+        <h2 class="fw-bold text-dark mb-0">Popular Destinations</h2>
+      </div>
+      <a href="{% url 'destinations:list' %}" class="btn btn-outline-te">View All Destinations <i class="bi bi-arrow-right ms-1"></i></a>
+    </div>
+
+    <div class="row g-4">
+      {% for dest in featured_destinations %}
+        <div class="col-lg-4 col-md-6">
+          <div class="travel-card">
+            <div class="card-img-wrapper">
+              <img src="{{ dest.display_image }}" alt="{{ dest.name }}" class="travel-card-img">
+              <span class="badge bg-light text-dark badge-float">
+                <i class="bi bi-geo-alt-fill text-danger me-1"></i>{{ dest.city.name }}, {{ dest.country.code }}
+              </span>
+              {% if dest.is_featured %}
+                <span class="badge bg-warning text-dark badge-float-left">Featured</span>
+              {% endif %}
+            </div>
+            <div class="card-body p-4 d-flex flex-column justify-content-between">
+              <div>
+                <h5 class="fw-bold text-dark mb-2">{{ dest.name }}</h5>
+                <p class="text-muted small mb-3">{{ dest.description|truncatewords:18 }}</p>
+              </div>
+              <div class="d-flex justify-content-between align-items-center pt-3 border-top mt-auto">
+                <div>
+                  <small class="text-muted d-block">From</small>
+                  <span class="h5 fw-bold text-primary mb-0">${{ dest.estimated_cost }}</span>
+                </div>
+                <a href="{% url 'destinations:detail' dest.id %}" class="btn btn-sm btn-primary-te">
+                  Explore <i class="bi bi-chevron-right ms-1"></i>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- Featured Travel Packages -->
+<section class="py-5">
+  <div class="container py-4">
+    <div class="d-flex justify-content-between align-items-end mb-4">
+      <div>
+        <h6 class="text-uppercase text-secondary fw-bold">Ready-to-Book Journeys</h6>
+        <h2 class="fw-bold text-dark mb-0">Featured Travel Packages</h2>
+      </div>
+      <a href="{% url 'packages:list' %}" class="btn btn-outline-te">Browse All Packages <i class="bi bi-arrow-right ms-1"></i></a>
+    </div>
+
+    <div class="row g-4">
+      {% for pkg in featured_packages %}
+        <div class="col-lg-6">
+          <div class="card travel-card h-100 flex-md-row overflow-hidden">
+            <div class="col-md-5 position-relative">
+              <img src="{{ pkg.display_image }}" alt="{{ pkg.title }}" class="h-100 w-100 object-fit-cover" style="min-height: 240px;">
+              <span class="badge bg-dark text-white badge-float-left">
+                <i class="bi bi-clock me-1"></i>{{ pkg.duration_days }} Days
+              </span>
+            </div>
+            <div class="col-md-7 p-4 d-flex flex-column justify-content-between">
+              <div>
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                  <span class="text-secondary small fw-bold">
+                    <i class="bi bi-geo-alt me-1"></i>{{ pkg.destination.name }}
+                  </span>
+                  <span class="badge bg-success-subtle text-success">Active Departures</span>
+                </div>
+                <h5 class="fw-bold text-dark mb-2">{{ pkg.title }}</h5>
+                <p class="text-muted small mb-3">{{ pkg.description|truncatewords:16 }}</p>
+                <div class="mb-3">
+                  <small class="fw-bold text-dark d-block mb-1">Includes:</small>
+                  <div class="d-flex flex-wrap gap-1">
+                    {% for s in pkg.services_list|slice:":3" %}
+                      <span class="badge bg-light text-muted border small">{{ s }}</span>
+                    {% endfor %}
+                  </div>
+                </div>
+              </div>
+              <div class="d-flex justify-content-between align-items-center pt-3 border-top mt-auto">
+                <div>
+                  <small class="text-muted d-block">Per Traveler</small>
+                  <span class="h4 fw-bold text-primary mb-0">${{ pkg.price_per_person }}</span>
+                </div>
+                <div class="d-flex gap-2">
+                  <a href="{% url 'packages:detail' pkg.id %}" class="btn btn-sm btn-outline-secondary">Details</a>
+                  <a href="{% url 'packages:booking_wizard' pkg.id %}" class="btn btn-sm btn-accent-te">Book Trip</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- Recommended Hotels -->
+<section class="py-5 bg-white">
+  <div class="container py-4">
+    <div class="d-flex justify-content-between align-items-end mb-4">
+      <div>
+        <h6 class="text-uppercase text-secondary fw-bold">Luxury &amp; Comfort</h6>
+        <h2 class="fw-bold text-dark mb-0">Recommended Hotels &amp; Resorts</h2>
+      </div>
+      <a href="{% url 'hotels:list' %}" class="btn btn-outline-te">View All Hotels <i class="bi bi-arrow-right ms-1"></i></a>
+    </div>
+
+    <div class="row g-4">
+      {% for hotel in recommended_hotels %}
+        <div class="col-lg-3 col-md-6">
+          <div class="travel-card">
+            <div class="card-img-wrapper">
+              <img src="{{ hotel.display_image }}" alt="{{ hotel.name }}" class="travel-card-img">
+              <span class="badge bg-dark bg-opacity-75 text-warning badge-float">
+                {% for i in "12345"|make_list %}
+                  {% if forloop.counter <= hotel.star_rating %}★{% endif %}
+                {% endfor %}
+              </span>
+            </div>
+            <div class="card-body p-3 d-flex flex-column justify-content-between">
+              <div>
+                <small class="text-muted"><i class="bi bi-geo-alt me-1"></i>{{ hotel.destination.city.name }}</small>
+                <h6 class="fw-bold text-dark mt-1 mb-2">{{ hotel.name }}</h6>
+                <p class="text-muted small mb-2">{{ hotel.description|truncatewords:10 }}</p>
+              </div>
+              <div class="d-flex justify-content-between align-items-center pt-2 border-top mt-auto">
+                <div>
+                  <small class="text-muted">From</small>
+                  <span class="fw-bold text-primary d-block">${{ hotel.min_price }}/nt</span>
+                </div>
+                <a href="{% url 'hotels:detail' hotel.id %}" class="btn btn-sm btn-primary-te">View Rooms</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- Testimonials Section -->
+<section class="py-5">
+  <div class="container py-4">
+    <div class="text-center mb-5">
+      <h6 class="text-uppercase text-secondary fw-bold">Traveler Experiences</h6>
+      <h2 class="fw-bold text-dark">Loved by Adventurers Worldwide</h2>
+    </div>
+
+    <div class="row g-4">
+      {% for review in reviews %}
+        <div class="col-md-6">
+          <div class="card border-0 shadow-sm rounded-4 p-4 h-100">
+            <div class="d-flex align-items-center mb-3">
+              <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center fw-bold fs-5 me-3" style="width: 48px; height: 48px;">
+                {{ review.user.first_name|default:review.user.username|slice:":1"|upper }}
+              </div>
+              <div>
+                <h6 class="fw-bold mb-0">{{ review.user.get_full_name|default:review.user.username }}</h6>
+                <small class="text-muted">Verified Traveler &bull; {{ review.destination.name }}</small>
+              </div>
+              <div class="ms-auto text-warning fs-6">
+                {% for i in "12345"|make_list %}
+                  {% if forloop.counter <= review.rating %}★{% else %}☆{% endif %}
+                {% endfor %}
+              </div>
+            </div>
+            <p class="text-secondary fst-italic mb-0">"{{ review.comment }}"</p>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- Call to Action Section -->
+<section class="py-5 bg-primary text-white text-center position-relative overflow-hidden" style="background: linear-gradient(135deg, #0f2444 0%, #0891b2 100%);">
+  <div class="container py-4">
+    <h2 class="display-6 fw-bold mb-3">Ready to Embark on Your Next Journey?</h2>
+    <p class="lead text-white-50 col-md-7 mx-auto mb-4">
+      Join thousands of satisfied explorers who trust TravelEase for seamless travel bookings, curated itineraries, and unforgettable moments.
+    </p>
+    <div class="d-flex justify-content-center gap-3">
+      <a href="{% url 'packages:list' %}" class="btn btn-accent-te btn-lg">Browse Travel Packages</a>
+      <a href="{% url 'accounts:register' %}" class="btn btn-outline-light btn-lg">Create Free Account</a>
+    </div>
+  </div>
+</section>
+{% endblock %}

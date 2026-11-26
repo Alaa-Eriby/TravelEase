@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+
+{% block title %}About Us – TravelEase Smart Travel & Tourism Booking System{% endblock %}
+
+{% block content %}
+<div class="py-5 bg-white border-bottom">
+  <div class="container text-center">
+    <span class="badge bg-secondary-subtle text-secondary px-3 py-1 rounded-pill fw-bold mb-2">Our Mission &amp; Heritage</span>
+    <h1 class="fw-bold text-dark">About TravelEase</h1>
+    <p class="lead text-muted col-md-8 mx-auto">
+      TravelEase was conceived and architected as an academic software construction practical implementation, bridging modern web technologies with real-world travel logistics.
+    </p>
+  </div>
+</div>
+
+<div class="container py-5">
+  <div class="row g-5 align-items-center mb-5">
+    <div class="col-lg-6">
+      <img src="https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=800&q=80" alt="About TravelEase" class="img-fluid rounded-4 shadow">
+    </div>
+    <div class="col-lg-6">
+      <h3 class="fw-bold text-primary mb-3">Our Vision</h3>
+      <p class="text-secondary leading-relaxed">
+        Our vision is to empower travelers with transparent, intelligent, and secure access to global tourism experiences. We unite customers, travel agencies, and administrators within a unified ecosystem powered by database-level concurrency control, role-based authorization, and modern responsive interfaces.
+      </p>
+      <div class="row g-3 mt-2">
+        <div class="col-6">
+          <div class="border rounded-3 p-3">
+            <h4 class="fw-bold text-warning mb-1">100%</h4>
+            <span class="text-muted small">Concurrency Safe Bookings</span>
+          </div>
+        </div>
+        <div class="col-6">
+          <div class="border rounded-3 p-3">
+            <h4 class="fw-bold text-warning mb-1">3 Roles</h4>
+            <span class="text-muted small">Travelers, Agents, Admins</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-4 mt-4">
+    <div class="col-md-4">
+      <div class="card border-0 shadow-sm p-4 h-100 rounded-4">
+        <div class="text-primary fs-2 mb-3"><i class="bi bi-diagram-3-fill"></i></div>
+        <h5 class="fw-bold">Modular Architecture</h5>
+        <p class="text-muted small mb-0">Built strictly adhering to SOLID principles, separation of concerns, and clean modular Django applications.</p>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card border-0 shadow-sm p-4 h-100 rounded-4">
+        <div class="text-secondary fs-2 mb-3"><i class="bi bi-shield-lock-fill"></i></div>
+        <h5 class="fw-bold">Security &amp; Integrity</h5>
+        <p class="text-muted small mb-0">Comprehensive CSRF protection, SQL injection prevention, safe simulated payment records, and user data isolation.</p>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card border-0 shadow-sm p-4 h-100 rounded-4">
+        <div class="text-warning fs-2 mb-3"><i class="bi bi-cpu-fill"></i></div>
+        <h5 class="fw-bold">OpenAPI &amp; RESTful Core</h5>
+        <p class="text-muted small mb-0">Fully decoupled backend APIs documented with drf-spectacular Swagger and accessible to external services.</p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

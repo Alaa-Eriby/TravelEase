@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+
+{% block title %}Hotels & Luxury Resorts – TravelEase{% endblock %}
+
+{% block content %}
+<div class="py-5 bg-white border-bottom">
+  <div class="container text-center">
+    <span class="badge bg-secondary-subtle text-secondary px-3 py-1 rounded-pill fw-bold mb-2">Verified Stays</span>
+    <h1 class="fw-bold text-dark">Hotels, Resorts &amp; Alpine Lodges</h1>
+    <p class="lead text-muted col-md-6 mx-auto">
+      Discover handpicked accommodations offering guaranteed room inventory and authentic hospitality.
+    </p>
+  </div>
+</div>
+
+<div class="container py-5">
+  <!-- Search & Filter Card -->
+  <div class="card border-0 shadow-sm rounded-4 p-4 mb-5 bg-white">
+    <form method="GET" class="row g-3 align-items-center">
+      <div class="col-md-3">
+        <label class="form-label small fw-bold text-muted">Hotel Name or Keyword</label>
+        <input type="text" name="q" class="form-control" placeholder="Search hotels..." value="{{ query }}">
+      </div>
+      <div class="col-md-3">
+        <label class="form-label small fw-bold text-muted">Destination</label>
+        <select name="destination" class="form-select">
+          <option value="">All Destinations</option>
+          {% for d in destinations %}
+            <option value="{{ d.id }}" {% if selected_destination == d.id|stringformat:"s" %}selected{% endif %}>{{ d.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-2">
+        <label class="form-label small fw-bold text-muted">Star Category</label>
+        <select name="star_rating" class="form-select">
+          <option value="">All Stars</option>
+          <option value="5" {% if star_rating == '5' %}selected{% endif %}>5 Stars (Luxury)</option>
+          <option value="4" {% if star_rating == '4' %}selected{% endif %}>4 Stars (Superior)</option>
+          <option value="3" {% if star_rating == '3' %}selected{% endif %}>3 Stars (Comfort)</option>
+        </select>
+      </div>
+      <div class="col-md-2">
+        <label class="form-label small fw-bold text-muted">Max Price / Night</label>
+        <input type="number" name="max_price" class="form-control" placeholder="Max $" value="{{ max_price }}">
+      </div>
+      <div class="col-md-2 d-grid">
+        <label class="form-label d-none d-md-block">&nbsp;</label>
+        <button type="submit" class="btn btn-primary-te">
+          <i class="bi bi-funnel-fill me-1"></i> Filter
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Hotels Grid -->
+  <div class="row g-4">
+    {% for hotel in hotels %}
+      <div class="col-lg-4 col-md-6">
+        <div class="travel-card">
+          <div class="card-img-wrapper">
+            <img src="{{ hotel.display_image }}" alt="{{ hotel.name }}" class="travel-card-img">
+            <span class="badge bg-dark bg-opacity-75 text-warning badge-float">
+              {% for i in "12345"|make_list %}
+                {% if forloop.counter <= hotel.star_rating %}★{% endif %}
+              {% endfor %}
+            </span>
+            {% if hotel.is_featured %}
+              <span class="badge bg-warning text-dark badge-float-left">Recommended</span>
+            {% endif %}
+          </div>
+          <div class="card-body p-4 d-flex flex-column justify-content-between">
+            <div>
+              <div class="d-flex justify-content-between align-items-center mb-1">
+                <small class="text-secondary fw-semibold"><i class="bi bi-geo-alt me-1"></i>{{ hotel.destination.city.name }}, {{ hotel.destination.country.code }}</small>
+                <span class="badge bg-light text-muted border">{{ hotel.rooms.count }} Room Types</span>
+              </div>
+              <h5 class="fw-bold text-dark mb-2">{{ hotel.name }}</h5>
+              <p class="text-muted small mb-3">{{ hotel.description|truncatewords:16 }}</p>
+
+              <div class="d-flex flex-wrap gap-1 mb-3">
+                {% for a in hotel.amenities_list|slice:":3" %}
+                  <span class="badge bg-light text-muted border small"><i class="bi bi-check me-1 text-success"></i>{{ a }}</span>
+                {% endfor %}
+              </div>
+            </div>
+
+            <div class="d-flex justify-content-between align-items-center pt-3 border-top mt-auto">
+              <div>
+                <small class="text-muted d-block">Starting from</small>
+                <span class="h5 fw-bold text-primary mb-0">${{ hotel.min_price }}</span><small class="text-muted"> /night</small>
+              </div>
+              <a href="{% url 'hotels:detail' hotel.id %}" class="btn btn-sm btn-primary-te">
+                Select Rooms <i class="bi bi-chevron-right ms-1"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    {% empty %}
+      <div class="col-12 text-center py-5">
+        <i class="bi bi-buildings text-muted display-4 d-block mb-3"></i>
+        <h4 class="fw-bold text-dark">No hotels match your search criteria</h4>
+        <p class="text-muted">Try adjusting your filters or search keywords.</p>
+        <a href="{% url 'hotels:list' %}" class="btn btn-outline-te">Clear All Filters</a>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

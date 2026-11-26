@@ -1,0 +1,120 @@
+{% extends 'base.html' %}
+
+{% block title %}Reserve {{ room.name }} – {{ hotel.name }}{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <div class="card border-0 shadow-sm rounded-4 p-4 p-md-5 bg-white">
+        <!-- Room Summary Header -->
+        <div class="d-flex align-items-center p-3 bg-light rounded-3 border mb-4">
+          <img src="{{ room.display_image }}" alt="{{ room.name }}" class="rounded-3 me-3" style="width: 80px; height: 80px; object-fit: cover;">
+          <div>
+            <span class="badge bg-secondary-subtle text-secondary small">{{ hotel.name }}</span>
+            <h5 class="fw-bold text-dark mb-1">{{ room.name }}</h5>
+            <span class="text-muted small">${{ room.price_per_night }} USD / night &bull; Max {{ room.capacity }} Guests</span>
+          </div>
+        </div>
+
+        <h4 class="fw-bold text-primary mb-4">Complete Hotel Reservation</h4>
+
+        <form method="POST">
+          {% csrf_token %}
+          <div class="row g-3 mb-4">
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Check-In Date <span class="text-danger">*</span></label>
+              <input type="date" name="check_in" id="checkInInput" class="form-control form-control-lg fs-6" required min="{{ today }}" onchange="calculateNights()">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Check-Out Date <span class="text-danger">*</span></label>
+              <input type="date" name="check_out" id="checkOutInput" class="form-control form-control-lg fs-6" required min="{{ today }}" onchange="calculateNights()">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Number of Guests</label>
+              <select name="guests_count" class="form-select form-select-lg fs-6">
+                <option value="1">1 Guest</option>
+                <option value="2" selected>2 Guests</option>
+                <option value="3">3 Guests</option>
+                <option value="4">4 Guests</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Number of Rooms</label>
+              <select name="rooms_count" id="roomsCountSelect" class="form-select form-select-lg fs-6" onchange="calculateNights()">
+                <option value="1" selected>1 Room</option>
+                <option value="2">2 Rooms</option>
+                <option value="3">3 Rooms</option>
+              </select>
+            </div>
+            <div class="col-12">
+              <label class="form-label fw-semibold">Special Requests (Optional)</label>
+              <textarea name="special_requests" rows="2" class="form-control" placeholder="Early check-in, quiet room, baby crib, high floor..."></textarea>
+            </div>
+          </div>
+
+          <!-- Price Calculation Box -->
+          <div class="p-4 rounded-3 bg-light border mb-4">
+            <h6 class="fw-bold text-dark mb-3">Live Accommodation Cost Breakdown</h6>
+            <div class="d-flex justify-content-between mb-2 small text-muted">
+              <span>Rate Per Night:</span>
+              <span class="fw-bold text-dark">${{ room.price_per_night }}</span>
+            </div>
+            <div class="d-flex justify-content-between mb-2 small text-muted">
+              <span>Total Nights:</span>
+              <span class="fw-bold text-dark" id="displayNights">1 night</span>
+            </div>
+            <div class="d-flex justify-content-between mb-2 small text-muted">
+              <span>Rooms Count:</span>
+              <span class="fw-bold text-dark" id="displayRooms">1 room</span>
+            </div>
+            <hr>
+            <div class="d-flex justify-content-between align-items-center">
+              <span class="h5 fw-bold text-dark mb-0">Total Estimated Price:</span>
+              <span class="h4 fw-bold text-primary mb-0" id="displayTotal">${{ room.price_per_night }}</span>
+            </div>
+          </div>
+
+          <!-- Academic Simulated Payment Notice -->
+          <div class="p-3 rounded-3 bg-warning-subtle border border-warning mb-4 small text-dark">
+            <i class="bi bi-shield-check text-warning-emphasis fs-5 me-2"></i>
+            <strong>Safe Academic Simulation:</strong> This checkout runs a simulated payment transaction. No card is charged and reservations are secured into database inventory immediately.
+          </div>
+
+          <button type="submit" class="btn btn-accent-te btn-lg w-100 fw-bold py-3">
+            <i class="bi bi-check2-circle me-2"></i> Confirm Hotel Reservation
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const pricePerNight = {{ room.price_per_night }};
+
+  function calculateNights() {
+    const ciVal = document.getElementById('checkInInput').value;
+    const coVal = document.getElementById('checkOutInput').value;
+    const roomsCount = parseInt(document.getElementById('roomsCountSelect').value) || 1;
+
+    if (ciVal && coVal) {
+      const ci = new Date(ciVal);
+      const co = new Date(coVal);
+      const diffTime = co - ci;
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+      if (diffDays > 0) {
+        const total = diffDays * pricePerNight * roomsCount;
+        document.getElementById('displayNights').innerText = `${diffDays} night(s)`;
+        document.getElementById('displayRooms').innerText = `${roomsCount} room(s)`;
+        document.getElementById('displayTotal').innerText = `$${total.toFixed(2)}`;
+        return;
+      }
+    }
+    document.getElementById('displayNights').innerText = '1 night';
+    document.getElementById('displayRooms').innerText = `${roomsCount} room(s)`;
+    document.getElementById('displayTotal').innerText = `$${(pricePerNight * roomsCount).toFixed(2)}`;
+  }
+</script>
+{% endblock %}

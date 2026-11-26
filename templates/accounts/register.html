@@ -1,0 +1,125 @@
+{% extends 'base.html' %}
+
+{% block title %}Create Account – TravelEase{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-md-7">
+      <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+        <div class="p-4 p-md-5 bg-white">
+          <div class="text-center mb-4">
+            <h3 class="fw-bold text-dark">Join TravelEase Platform</h3>
+            <p class="text-muted small">Choose your role and start booking or managing world-class trips</p>
+          </div>
+
+          <form method="POST">
+            {% csrf_token %}
+            
+            <div class="mb-4">
+              <label class="form-label fw-bold">Select Account Role <span class="text-danger">*</span></label>
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <div class="border rounded-3 p-3 text-center cursor-pointer role-card" onclick="selectRole('CUSTOMER')" id="cardCustomer" style="border: 2px solid var(--te-primary) !important; background-color: #f0fdf4;">
+                    <input type="radio" name="role" value="CUSTOMER" id="roleCustomer" checked class="d-none">
+                    <i class="bi bi-person-walking text-primary fs-2 mb-2 d-block"></i>
+                    <h6 class="fw-bold mb-1">Customer / Traveler</h6>
+                    <small class="text-muted">Book packages, hotel rooms, and manage personal trips</small>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="border rounded-3 p-3 text-center cursor-pointer role-card" onclick="selectRole('AGENT')" id="cardAgent" style="border: 1px solid #cbd5e1;">
+                    <input type="radio" name="role" value="AGENT" id="roleAgent" class="d-none">
+                    <i class="bi bi-briefcase-fill text-success fs-2 mb-2 d-block"></i>
+                    <h6 class="fw-bold mb-1">Travel Agent</h6>
+                    <small class="text-muted">Publish packages, manage departure dates, and review travelers</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="row g-3 mb-3">
+              <div class="col-md-6">
+                <label class="form-label fw-semibold">First Name</label>
+                <input type="text" name="first_name" class="form-control" placeholder="e.g. Michael">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label fw-semibold">Last Name</label>
+                <input type="text" name="last_name" class="form-control" placeholder="e.g. Miller">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label fw-semibold">Username <span class="text-danger">*</span></label>
+                <input type="text" name="username" class="form-control" required placeholder="Choose a username">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label fw-semibold">Email Address <span class="text-danger">*</span></label>
+                <input type="email" name="email" class="form-control" required placeholder="name@example.com">
+              </div>
+              <div class="col-md-12">
+                <label class="form-label fw-semibold">Phone Number</label>
+                <input type="text" name="phone" class="form-control" placeholder="+1 (555) 000-0000">
+              </div>
+            </div>
+
+            <!-- Agent specific fields -->
+            <div id="agentFields" style="display: none;" class="bg-light p-3 rounded-3 border mb-3">
+              <h6 class="fw-bold text-success mb-2"><i class="bi bi-patch-check me-1"></i>Travel Agency Information</h6>
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <label class="form-label small fw-semibold">Agency / Business Name</label>
+                  <input type="text" name="agency_name" class="form-control" placeholder="e.g. Horizon Global Tours">
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label small fw-semibold">Tourism License Number</label>
+                  <input type="text" name="license_number" class="form-control" placeholder="e.g. LIC-GLOBAL-2026">
+                </div>
+              </div>
+            </div>
+
+            <div class="row g-3 mb-4">
+              <div class="col-md-6">
+                <label class="form-label fw-semibold">Password <span class="text-danger">*</span></label>
+                <input type="password" name="password" class="form-control" required placeholder="Min. 6 characters">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label fw-semibold">Confirm Password <span class="text-danger">*</span></label>
+                <input type="password" name="password_confirm" class="form-control" required placeholder="Repeat password">
+              </div>
+            </div>
+
+            <button type="submit" class="btn btn-accent-te btn-lg w-100 fw-bold mb-3">
+              Register Account
+            </button>
+          </form>
+
+          <div class="text-center mt-3">
+            <span class="text-muted small">Already registered?</span>
+            <a href="{% url 'accounts:login' %}" class="fw-bold text-primary text-decoration-none small ms-1">Sign In Here</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function selectRole(role) {
+    document.getElementById('roleCustomer').checked = (role === 'CUSTOMER');
+    document.getElementById('roleAgent').checked = (role === 'AGENT');
+    
+    if (role === 'CUSTOMER') {
+      document.getElementById('cardCustomer').style.border = '2px solid var(--te-primary)';
+      document.getElementById('cardCustomer').style.backgroundColor = '#f0fdf4';
+      document.getElementById('cardAgent').style.border = '1px solid #cbd5e1';
+      document.getElementById('cardAgent').style.backgroundColor = '#ffffff';
+      document.getElementById('agentFields').style.display = 'none';
+    } else {
+      document.getElementById('cardAgent').style.border = '2px solid #16a34a';
+      document.getElementById('cardAgent').style.backgroundColor = '#f0fdf4';
+      document.getElementById('cardCustomer').style.border = '1px solid #cbd5e1';
+      document.getElementById('cardCustomer').style.backgroundColor = '#ffffff';
+      document.getElementById('agentFields').style.display = 'block';
+    }
+  }
+</script>
+{% endblock %}

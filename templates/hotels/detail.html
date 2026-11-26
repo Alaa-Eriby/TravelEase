@@ -1,0 +1,141 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ hotel.name }} – TravelEase Hotels{% endblock %}
+
+{% block content %}
+<!-- Hotel Hero Banner -->
+<div class="position-relative" style="height: 380px; overflow: hidden;">
+  <img src="{{ hotel.display_image }}" alt="{{ hotel.name }}" class="w-100 h-100 object-fit-cover">
+  <div class="position-absolute top-0 start-0 w-100 h-100" style="background: linear-gradient(180deg, rgba(15, 36, 68, 0.4) 0%, rgba(15, 36, 68, 0.9) 100%);"></div>
+  <div class="position-absolute bottom-0 start-0 w-100 p-4 p-md-5 text-white">
+    <div class="container">
+      <div class="d-flex align-items-center mb-2">
+        <span class="text-warning fs-5 me-2">
+          {% for i in "12345"|make_list %}{% if forloop.counter <= hotel.star_rating %}★{% endif %}{% endfor %}
+        </span>
+        <span class="badge bg-light text-dark">{{ hotel.star_rating }}-Star Verified Stay</span>
+      </div>
+      <h1 class="display-4 fw-bold text-white mb-2">{{ hotel.name }}</h1>
+      <p class="lead text-white-50 mb-0">
+        <i class="bi bi-geo-alt me-1"></i>{{ hotel.address }}, {{ hotel.destination.name }}
+      </p>
+    </div>
+  </div>
+</div>
+
+<div class="container py-5">
+  <div class="row g-5">
+    <div class="col-lg-8">
+      <!-- Hotel Description & Amenities -->
+      <div class="card border-0 shadow-sm rounded-4 p-4 p-md-5 mb-5 bg-white">
+        <h3 class="fw-bold text-primary mb-3">Property Overview</h3>
+        <p class="text-secondary leading-relaxed fs-6 mb-4">{{ hotel.description }}</p>
+
+        <h5 class="fw-bold text-dark mb-3">Property Amenities</h5>
+        <div class="row g-3">
+          {% for amenity in hotel.amenities_list %}
+            <div class="col-md-6">
+              <div class="d-flex align-items-center p-2 rounded-2 bg-light border">
+                <i class="bi bi-check2-circle text-success fs-5 me-2"></i>
+                <span class="small fw-semibold text-dark">{{ amenity }}</span>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+
+      <!-- Live Room Availability Checker Form -->
+      <div class="card border-0 shadow-sm rounded-4 p-4 mb-5 bg-light border">
+        <h5 class="fw-bold text-dark mb-3"><i class="bi bi-calendar-check me-2 text-primary"></i>Check Live Room Availability</h5>
+        <form method="GET" class="row g-3 align-items-center">
+          <div class="col-md-5">
+            <label class="form-label small fw-bold text-muted">Check-In Date</label>
+            <input type="date" name="check_in" class="form-control" value="{{ check_in }}">
+          </div>
+          <div class="col-md-5">
+            <label class="form-label small fw-bold text-muted">Check-Out Date</label>
+            <input type="date" name="check_out" class="form-control" value="{{ check_out }}">
+          </div>
+          <div class="col-md-2 d-grid">
+            <label class="form-label d-none d-md-block">&nbsp;</label>
+            <button type="submit" class="btn btn-primary-te">Update</button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Available Rooms -->
+      <h3 class="fw-bold text-primary mb-4">Choose Your Room</h3>
+      <div class="row g-4 mb-5">
+        {% for item in rooms_availability %}
+          <div class="col-12">
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden flex-md-row">
+              <div class="col-md-4 position-relative">
+                <img src="{{ item.room.display_image }}" alt="{{ item.room.name }}" class="w-100 h-100 object-fit-cover" style="min-height: 200px;">
+              </div>
+              <div class="col-md-8 p-4 d-flex flex-column justify-content-between">
+                <div>
+                  <div class="d-flex justify-content-between align-items-center mb-1">
+                    <span class="badge bg-secondary-subtle text-secondary">{{ item.room.get_room_type_display }}</span>
+                    {% if item.available_count > 0 %}
+                      <span class="badge bg-success-subtle text-success"><i class="bi bi-door-open-fill me-1"></i>{{ item.available_count }} Rooms Available</span>
+                    {% else %}
+                      <span class="badge bg-danger-subtle text-danger">Sold Out for Selected Dates</span>
+                    {% endif %}
+                  </div>
+                  <h5 class="fw-bold text-dark mb-1">{{ item.room.name }}</h5>
+                  <p class="text-muted small mb-2"><i class="bi bi-people me-1"></i>Max capacity: {{ item.room.capacity }} Guests</p>
+                  <p class="text-muted small mb-3">{{ item.room.description|default:"Includes complimentary high-speed Wi-Fi, air conditioning, and plush bedding." }}</p>
+                </div>
+                <div class="d-flex justify-content-between align-items-center pt-3 border-top mt-auto">
+                  <div>
+                    <span class="h4 fw-bold text-primary mb-0">${{ item.room.price_per_night }}</span>
+                    <small class="text-muted"> /night</small>
+                  </div>
+                  {% if item.available_count > 0 %}
+                    <a href="{% url 'hotels:booking' item.room.id %}{% if check_in and check_out %}?check_in={{ check_in }}&check_out={{ check_out }}{% endif %}" class="btn btn-accent-te">
+                      Reserve Room
+                    </a>
+                  {% else %}
+                    <button class="btn btn-secondary" disabled>Unavailable</button>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+          </div>
+        {% empty %}
+          <div class="col-12 text-muted">No rooms currently configured for this hotel.</div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Hotel Sidebar -->
+    <div class="col-lg-4">
+      <div class="card border-0 shadow-sm rounded-4 p-4 bg-white sticky-top" style="top: 100px;">
+        <h5 class="fw-bold text-dark mb-3">Hotel Contact &amp; Details</h5>
+        <ul class="list-unstyled small mb-4">
+          <li class="py-2 border-bottom">
+            <span class="text-muted d-block">Location</span>
+            <strong class="text-dark">{{ hotel.address }}</strong>
+          </li>
+          <li class="py-2 border-bottom">
+            <span class="text-muted d-block">Telephone</span>
+            <strong class="text-dark">{{ hotel.phone|default:"+1 (800) 555-HOTEL" }}</strong>
+          </li>
+          <li class="py-2 border-bottom">
+            <span class="text-muted d-block">Official Email</span>
+            <strong class="text-dark">{{ hotel.email|default:"contact@hotel.local" }}</strong>
+          </li>
+          <li class="py-2">
+            <span class="text-muted d-block">Check-in / Check-out</span>
+            <strong class="text-dark">14:00 Check-in / 11:00 Check-out</strong>
+          </li>
+        </ul>
+
+        <div class="alert alert-success small mb-0">
+          <i class="bi bi-shield-check me-1"></i> Overlapping reservation prevention active. Database ensures real inventory availability.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

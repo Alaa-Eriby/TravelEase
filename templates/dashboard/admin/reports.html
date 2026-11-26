@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+
+{% block title %}Operational & Financial Reports – Admin Panel{% endblock %}
+
+{% block content %}
+<div class="py-4 bg-white border-bottom">
+  <div class="container d-flex justify-content-between align-items-center">
+    <div>
+      <a href="{% url 'core:admin_dashboard' %}" class="small text-muted text-decoration-none">&larr; Back to Admin Panel</a>
+      <h2 class="fw-bold text-dark mb-0">System Financial &amp; Operational Reports</h2>
+    </div>
+    <button onclick="window.print()" class="btn btn-primary-te"><i class="bi bi-printer me-1"></i> Print Report</button>
+  </div>
+</div>
+
+<div class="container py-5">
+  <!-- Revenue Breakdown Cards -->
+  <div class="row g-4 mb-5">
+    <div class="col-md-4">
+      <div class="stat-widget">
+        <div>
+          <span class="text-muted small fw-semibold">Package Bookings Revenue</span>
+          <h3 class="fw-bold text-primary mt-1 mb-0">${{ pkg_revenue }}</h3>
+        </div>
+        <div class="stat-icon bg-primary-subtle text-primary">
+          <i class="bi bi-backpack-fill"></i>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="stat-widget">
+        <div>
+          <span class="text-muted small fw-semibold">Hotel Reservations Revenue</span>
+          <h3 class="fw-bold text-success mt-1 mb-0">${{ htl_revenue }}</h3>
+        </div>
+        <div class="stat-icon bg-success-subtle text-success">
+          <i class="bi bi-buildings-fill"></i>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="stat-widget">
+        <div>
+          <span class="text-muted small fw-semibold">Combined Total Revenue</span>
+          <h3 class="fw-bold text-dark mt-1 mb-0">${{ total_revenue }}</h3>
+        </div>
+        <div class="stat-icon bg-warning-subtle text-warning">
+          <i class="bi bi-cash-stack"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Top Destinations by Packages & Inventory -->
+  <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
+    <h4 class="fw-bold text-primary mb-4"><i class="bi bi-bar-chart-line-fill me-2"></i>Top Destinations Performance Analysis</h4>
+    <div class="table-responsive">
+      <table class="table table-hover align-middle">
+        <thead class="table-light">
+          <tr>
+            <th>Destination</th>
+            <th>Country</th>
+            <th>Packages Available</th>
+            <th>Hotels Operating</th>
+            <th>Base Est. Rate</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for d in top_destinations %}
+            <tr>
+              <td><strong>{{ d.name }}</strong></td>
+              <td>{{ d.country.name }}</td>
+              <td><span class="badge bg-primary">{{ d.packages_count }} packages</span></td>
+              <td><span class="badge bg-info text-dark">{{ d.hotels_count }} hotels</span></td>
+              <td><span class="fw-bold text-success">${{ d.estimated_cost }}</span></td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

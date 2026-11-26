@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+
+{% block title %}Reservation Control – Admin Panel{% endblock %}
+
+{% block content %}
+<div class="py-4 bg-white border-bottom">
+  <div class="container d-flex justify-content-between align-items-center">
+    <div>
+      <a href="{% url 'core:admin_dashboard' %}" class="small text-muted text-decoration-none">&larr; Back to Admin Panel</a>
+      <h2 class="fw-bold text-dark mb-0">All System Reservations</h2>
+    </div>
+  </div>
+</div>
+
+<div class="container py-5">
+  <!-- Package Bookings Table -->
+  <div class="card border-0 shadow-sm rounded-4 p-4 mb-5 bg-white">
+    <h4 class="fw-bold text-primary mb-4"><i class="bi bi-backpack me-2"></i>Travel Package Bookings</h4>
+    <div class="table-responsive">
+      <table class="table table-hover align-middle">
+        <thead class="table-light">
+          <tr>
+            <th>Booking Reference</th>
+            <th>Package</th>
+            <th>Customer</th>
+            <th>Departure Date</th>
+            <th>Travelers</th>
+            <th>Total Amount</th>
+            <th>Status</th>
+            <th class="text-end">Receipt</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for b in package_bookings %}
+            <tr>
+              <td><code>{{ b.booking_reference }}</code></td>
+              <td><strong>{{ b.departure.package.title }}</strong></td>
+              <td>{{ b.customer.get_full_name|default:b.customer.username }}</td>
+              <td>{{ b.departure.departure_date|date:"M d, Y" }}</td>
+              <td><span class="badge bg-secondary">{{ b.travelers_count }}</span></td>
+              <td><span class="fw-bold text-success">${{ b.total_price }}</span></td>
+              <td>
+                {% if b.status == 'CONFIRMED' %}
+                  <span class="badge bg-success">Confirmed</span>
+                {% elif b.status == 'CANCELLED' %}
+                  <span class="badge bg-danger">Cancelled</span>
+                {% else %}
+                  <span class="badge bg-secondary">{{ b.status }}</span>
+                {% endif %}
+              </td>
+              <td class="text-end">
+                <a href="{% url 'bookings:package_confirmation' b.booking_reference %}" class="btn btn-sm btn-outline-primary">View</a>
+              </td>
+            </tr>
+          {% empty %}
+            <tr><td colspan="8" class="text-muted text-center py-3">No package bookings in database.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Hotel Bookings Table -->
+  <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
+    <h4 class="fw-bold text-primary mb-4"><i class="bi bi-buildings me-2"></i>Hotel Room Reservations</h4>
+    <div class="table-responsive">
+      <table class="table table-hover align-middle">
+        <thead class="table-light">
+          <tr>
+            <th>Reference</th>
+            <th>Hotel</th>
+            <th>Room Category</th>
+            <th>Customer</th>
+            <th>Check-in &rarr; Check-out</th>
+            <th>Total Amount</th>
+            <th>Status</th>
+            <th class="text-end">Receipt</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for b in hotel_bookings %}
+            <tr>
+              <td><code>{{ b.booking_reference }}</code></td>
+              <td><strong>{{ b.room.hotel.name }}</strong></td>
+              <td>{{ b.room.name }}</td>
+              <td>{{ b.customer.get_full_name|default:b.customer.username }}</td>
+              <td>{{ b.check_in|date:"M d" }} &rarr; {{ b.check_out|date:"M d, Y" }}</td>
+              <td><span class="fw-bold text-success">${{ b.total_price }}</span></td>
+              <td>
+                {% if b.status == 'CONFIRMED' %}
+                  <span class="badge bg-success">Confirmed</span>
+                {% elif b.status == 'CANCELLED' %}
+                  <span class="badge bg-danger">Cancelled</span>
+                {% else %}
+                  <span class="badge bg-secondary">{{ b.status }}</span>
+                {% endif %}
+              </td>
+              <td class="text-end">
+                <a href="{% url 'bookings:hotel_confirmation' b.booking_reference %}" class="btn btn-sm btn-outline-primary">View</a>
+              </td>
+            </tr>
+          {% empty %}
+            <tr><td colspan="8" class="text-muted text-center py-3">No hotel reservations in database.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

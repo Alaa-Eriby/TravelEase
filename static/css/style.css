@@ -1,0 +1,312 @@
+/* TravelEase Custom Stylesheet - Brand Identity */
+:root {
+  --te-primary: #0f2444;
+  --te-primary-dark: #0a182e;
+  --te-secondary: #0891b2;
+  --te-secondary-light: #06b6d4;
+  --te-accent: #f97316;
+  --te-accent-hover: #ea580c;
+  --te-bg-light: #f8fafc;
+  --te-text-dark: #1e293b;
+  --te-text-muted: #64748b;
+  --te-card-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.08), 0 8px 10px -6px rgba(15, 23, 42, 0.04);
+  --te-card-hover: 0 20px 30px -10px rgba(15, 23, 42, 0.15);
+  --te-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+body {
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  color: var(--te-text-dark);
+  background-color: var(--te-bg-light);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+main {
+  flex: 1;
+}
+
+/* Navbar */
+.navbar-travelease {
+  background-color: #ffffff;
+  box-shadow: 0 2px 15px rgba(0, 0, 0, 0.06);
+  padding: 0.85rem 0;
+  transition: var(--te-transition);
+}
+
+.navbar-brand {
+  font-weight: 800;
+  font-size: 1.5rem;
+  color: var(--te-primary) !important;
+  letter-spacing: -0.5px;
+}
+
+.navbar-brand span {
+  color: var(--te-accent);
+}
+
+.nav-link {
+  font-weight: 600;
+  color: #334155 !important;
+  padding: 0.5rem 1rem !important;
+  transition: var(--te-transition);
+}
+
+.nav-link:hover, .nav-link.active {
+  color: var(--te-secondary) !important;
+}
+
+/* Buttons */
+.btn-primary-te {
+  background-color: var(--te-primary);
+  border-color: var(--te-primary);
+  color: #ffffff;
+  font-weight: 600;
+  padding: 0.6rem 1.4rem;
+  border-radius: 8px;
+  transition: var(--te-transition);
+}
+
+.btn-primary-te:hover {
+  background-color: var(--te-primary-dark);
+  border-color: var(--te-primary-dark);
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
+.btn-accent-te {
+  background-color: var(--te-accent);
+  border-color: var(--te-accent);
+  color: #ffffff;
+  font-weight: 600;
+  padding: 0.6rem 1.4rem;
+  border-radius: 8px;
+  transition: var(--te-transition);
+}
+
+.btn-accent-te:hover {
+  background-color: var(--te-accent-hover);
+  border-color: var(--te-accent-hover);
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
+.btn-outline-te {
+  border: 2px solid var(--te-primary);
+  color: var(--te-primary);
+  font-weight: 600;
+  border-radius: 8px;
+  padding: 0.55rem 1.3rem;
+  transition: var(--te-transition);
+}
+
+.btn-outline-te:hover {
+  background-color: var(--te-primary);
+  color: #ffffff;
+}
+
+/* Hero Section */
+.hero-section {
+  position: relative;
+  background: linear-gradient(135deg, rgba(15, 36, 68, 0.88), rgba(8, 145, 178, 0.8)), url('https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=1920&q=80') center/cover no-repeat;
+  color: #ffffff;
+  padding: 6.5rem 0 5rem 0;
+  border-radius: 0 0 2rem 2rem;
+}
+
+.search-box-card {
+  background: #ffffff;
+  border-radius: 1rem;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+  padding: 1.5rem;
+  color: var(--te-text-dark);
+}
+
+/* Travel Cards */
+.travel-card {
+  border: none;
+  border-radius: 14px;
+  overflow: hidden;
+  background: #ffffff;
+  box-shadow: var(--te-card-shadow);
+  transition: var(--te-transition);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.travel-card:hover {
+  transform: translateY(-6px);
+  box-shadow: var(--te-card-hover);
+}
+
+.travel-card-img {
+  height: 220px;
+  object-fit: cover;
+  width: 100%;
+  transition: transform 0.5s ease;
+}
+
+.travel-card:hover .travel-card-img {
+  transform: scale(1.05);
+}
+
+.card-img-wrapper {
+  overflow: hidden;
+  position: relative;
+}
+
+.badge-float {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 2;
+  font-weight: 600;
+  padding: 0.4rem 0.8rem;
+  border-radius: 30px;
+  backdrop-filter: blur(4px);
+}
+
+.badge-float-left {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  z-index: 2;
+  font-weight: 600;
+  padding: 0.4rem 0.8rem;
+  border-radius: 30px;
+}
+
+/* Feature Icon Box */
+.feature-box {
+  background: #ffffff;
+  padding: 2.2rem 1.8rem;
+  border-radius: 14px;
+  box-shadow: var(--te-card-shadow);
+  text-align: center;
+  transition: var(--te-transition);
+  height: 100%;
+}
+
+.feature-box:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--te-card-hover);
+}
+
+.feature-icon-wrapper {
+  width: 65px;
+  height: 65px;
+  border-radius: 50%;
+  background-color: rgba(8, 145, 178, 0.1);
+  color: var(--te-secondary);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.8rem;
+  margin-bottom: 1.2rem;
+}
+
+/* Dashboard Sidebar */
+.dashboard-sidebar {
+  background: #ffffff;
+  border-radius: 14px;
+  box-shadow: var(--te-card-shadow);
+  padding: 1.5rem 1rem;
+}
+
+.dashboard-nav-item {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem 1.2rem;
+  font-weight: 600;
+  color: var(--te-text-dark);
+  text-decoration: none;
+  border-radius: 10px;
+  margin-bottom: 0.4rem;
+  transition: var(--te-transition);
+}
+
+.dashboard-nav-item i {
+  font-size: 1.25rem;
+  margin-right: 0.8rem;
+}
+
+.dashboard-nav-item:hover, .dashboard-nav-item.active {
+  background-color: rgba(15, 36, 68, 0.08);
+  color: var(--te-primary);
+}
+
+.stat-widget {
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 1.5rem;
+  box-shadow: var(--te-card-shadow);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.stat-icon {
+  width: 55px;
+  height: 55px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.6rem;
+}
+
+/* Academic Banner */
+.academic-notice {
+  background-color: #fef3c7;
+  border-bottom: 1px solid #fde68a;
+  color: #92400e;
+  font-size: 0.85rem;
+  padding: 0.4rem 0;
+  text-align: center;
+  font-weight: 600;
+}
+
+/* Footer */
+footer {
+  background-color: var(--te-primary-dark);
+  color: #94a3b8;
+  padding: 4rem 0 2rem 0;
+  margin-top: auto;
+}
+
+footer h5 {
+  color: #ffffff;
+  font-weight: 700;
+  margin-bottom: 1.4rem;
+}
+
+footer a {
+  color: #94a3b8;
+  text-decoration: none;
+  transition: var(--te-transition);
+}
+
+footer a:hover {
+  color: #38bdf8;
+}
+
+.social-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  margin-right: 0.5rem;
+  transition: var(--te-transition);
+}
+
+.social-btn:hover {
+  background: var(--te-accent);
+  color: #ffffff;
+  transform: translateY(-2px);
+}

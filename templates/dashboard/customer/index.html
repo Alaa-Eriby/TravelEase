@@ -1,0 +1,298 @@
+{% extends 'base.html' %}
+
+{% block title %}My Dashboard – TravelEase{% endblock %}
+
+{% block content %}
+<div class="py-4 bg-white border-bottom">
+  <div class="container d-flex flex-wrap justify-content-between align-items-center">
+    <div>
+      <span class="badge bg-primary-subtle text-primary px-3 py-1 rounded-pill fw-bold mb-1">Traveler Portal</span>
+      <h2 class="fw-bold text-dark mb-0">Welcome, {{ user.first_name|default:user.username }}!</h2>
+    </div>
+    <div class="mt-3 mt-md-0 d-flex gap-2">
+      <a href="{% url 'packages:list' %}" class="btn btn-accent-te"><i class="bi bi-compass me-1"></i> Book New Trip</a>
+      <a href="{% url 'hotels:list' %}" class="btn btn-outline-te"><i class="bi bi-buildings me-1"></i> Find Hotels</a>
+    </div>
+  </div>
+</div>
+
+<div class="container py-5">
+  <!-- Stats Cards Row -->
+  <div class="row g-4 mb-5">
+    <div class="col-md-4">
+      <div class="stat-widget">
+        <div>
+          <span class="text-muted small fw-semibold">Active &amp; Upcoming Trips</span>
+          <h3 class="fw-bold text-dark mt-1 mb-0">{{ upcoming_packages.count|add:upcoming_hotels.count }}</h3>
+        </div>
+        <div class="stat-icon bg-primary-subtle text-primary">
+          <i class="bi bi-airplane-engines-fill"></i>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="stat-widget">
+        <div>
+          <span class="text-muted small fw-semibold">Saved Favorites</span>
+          <h3 class="fw-bold text-dark mt-1 mb-0">{{ favorites.count }}</h3>
+        </div>
+        <div class="stat-icon bg-danger-subtle text-danger">
+          <i class="bi bi-heart-fill"></i>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="stat-widget">
+        <div>
+          <span class="text-muted small fw-semibold">Total Booking Spend</span>
+          <h3 class="fw-bold text-success mt-1 mb-0">${{ total_spent }}</h3>
+        </div>
+        <div class="stat-icon bg-success-subtle text-success">
+          <i class="bi bi-wallet2"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Dashboard Navigation Tabs -->
+  <ul class="nav nav-pills mb-4 gap-2" id="dashboardTab" role="tablist">
+    <li class="nav-item" role="presentation">
+      <button class="nav-link active px-4 py-2 fw-bold" id="packages-tab" data-bs-toggle="pill" data-bs-target="#packagesTabContent" type="button" role="tab">
+        <i class="bi bi-backpack me-2"></i>Travel Packages ({{ upcoming_packages.count|add:past_packages.count }})
+      </button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link px-4 py-2 fw-bold" id="hotels-tab" data-bs-toggle="pill" data-bs-target="#hotelsTabContent" type="button" role="tab">
+        <i class="bi bi-buildings me-2"></i>Hotel Stays ({{ upcoming_hotels.count|add:past_hotels.count }})
+      </button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link px-4 py-2 fw-bold" id="favorites-tab" data-bs-toggle="pill" data-bs-target="#favoritesTabContent" type="button" role="tab">
+        <i class="bi bi-heart me-2"></i>Saved Destinations ({{ favorites.count }})
+      </button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link px-4 py-2 fw-bold" id="payments-tab" data-bs-toggle="pill" data-bs-target="#paymentsTabContent" type="button" role="tab">
+        <i class="bi bi-receipt me-2"></i>Payment Receipts
+      </button>
+    </li>
+  </ul>
+
+  <!-- Tab Contents -->
+  <div class="tab-content" id="dashboardTabContent">
+    <!-- 1. Packages Tab -->
+    <div class="tab-pane fade show active" id="packagesTabContent" role="tabpanel">
+      <!-- Upcoming Packages -->
+      <div class="card border-0 shadow-sm rounded-4 p-4 mb-4 bg-white">
+        <h5 class="fw-bold text-primary mb-3"><i class="bi bi-calendar-check me-2"></i>Upcoming Travel Package Bookings</h5>
+        {% if upcoming_packages %}
+          <div class="table-responsive">
+            <table class="table table-hover align-middle">
+              <thead class="table-light">
+                <tr>
+                  <th>Booking Ref</th>
+                  <th>Trip &amp; Destination</th>
+                  <th>Departure Date</th>
+                  <th>Travelers</th>
+                  <th>Total Cost</th>
+                  <th>Status</th>
+                  <th class="text-end">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for b in upcoming_packages %}
+                  <tr>
+                    <td><span class="badge bg-light text-dark border fw-bold">{{ b.booking_reference }}</span></td>
+                    <td>
+                      <strong class="text-dark d-block">{{ b.departure.package.title }}</strong>
+                      <small class="text-muted">{{ b.departure.package.destination.name }}</small>
+                    </td>
+                    <td>{{ b.departure.departure_date|date:"M d, Y" }}</td>
+                    <td><span class="badge bg-secondary">{{ b.travelers_count }}</span></td>
+                    <td><span class="fw-bold text-primary">${{ b.total_price }}</span></td>
+                    <td><span class="badge bg-success-subtle text-success">{{ b.get_status_display }}</span></td>
+                    <td class="text-end">
+                      <a href="{% url 'bookings:package_confirmation' b.booking_reference %}" class="btn btn-sm btn-outline-primary me-1">Receipt</a>
+                      {% if b.can_cancel %}
+                        <form action="{% url 'bookings:cancel_package_booking' b.id %}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to cancel this booking per cancellation policy?');">
+                          {% csrf_token %}
+                          <button type="submit" class="btn btn-sm btn-outline-danger">Cancel</button>
+                        </form>
+                      {% endif %}
+                    </td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        {% else %}
+          <p class="text-muted mb-0">No upcoming package trips. <a href="{% url 'packages:list' %}" class="fw-bold">Browse Packages</a></p>
+        {% endif %}
+      </div>
+
+      <!-- Past / Cancelled Packages -->
+      {% if cancelled_packages or past_packages %}
+        <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
+          <h6 class="fw-bold text-muted mb-3">Booking History (Completed &amp; Cancelled)</h6>
+          <div class="table-responsive">
+            <table class="table table-sm align-middle text-muted">
+              <thead>
+                <tr>
+                  <th>Ref</th>
+                  <th>Trip</th>
+                  <th>Departure</th>
+                  <th>Amount</th>
+                  <th>Status</th>
+                  <th>Cancellation Notes</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for b in past_packages %}
+                  <tr>
+                    <td>{{ b.booking_reference }}</td>
+                    <td>{{ b.departure.package.title }}</td>
+                    <td>{{ b.departure.departure_date|date:"M d, Y" }}</td>
+                    <td>${{ b.total_price }}</td>
+                    <td><span class="badge bg-secondary">Completed</span></td>
+                    <td>-</td>
+                  </tr>
+                {% endfor %}
+                {% for b in cancelled_packages %}
+                  <tr>
+                    <td>{{ b.booking_reference }}</td>
+                    <td>{{ b.departure.package.title }}</td>
+                    <td>{{ b.departure.departure_date|date:"M d, Y" }}</td>
+                    <td>${{ b.total_price }}</td>
+                    <td><span class="badge bg-danger-subtle text-danger">Cancelled</span></td>
+                    <td><small>{{ b.cancellation_reason|default:"Policy cancellation" }}</small></td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      {% endif %}
+    </div>
+
+    <!-- 2. Hotels Tab -->
+    <div class="tab-pane fade" id="hotelsTabContent" role="tabpanel">
+      <div class="card border-0 shadow-sm rounded-4 p-4 mb-4 bg-white">
+        <h5 class="fw-bold text-primary mb-3"><i class="bi bi-buildings me-2"></i>Upcoming Hotel Reservations</h5>
+        {% if upcoming_hotels %}
+          <div class="table-responsive">
+            <table class="table table-hover align-middle">
+              <thead class="table-light">
+                <tr>
+                  <th>Ref</th>
+                  <th>Hotel &amp; Room</th>
+                  <th>Check-In &rarr; Check-Out</th>
+                  <th>Nights</th>
+                  <th>Total Cost</th>
+                  <th>Status</th>
+                  <th class="text-end">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for b in upcoming_hotels %}
+                  <tr>
+                    <td><span class="badge bg-light text-dark border fw-bold">{{ b.booking_reference }}</span></td>
+                    <td>
+                      <strong class="text-dark d-block">{{ b.room.hotel.name }}</strong>
+                      <small class="text-muted">{{ b.room.name }}</small>
+                    </td>
+                    <td>{{ b.check_in|date:"M d" }} &rarr; {{ b.check_out|date:"M d, Y" }}</td>
+                    <td>{{ b.total_nights }} nights</td>
+                    <td><span class="fw-bold text-primary">${{ b.total_price }}</span></td>
+                    <td><span class="badge bg-success-subtle text-success">{{ b.get_status_display }}</span></td>
+                    <td class="text-end">
+                      <a href="{% url 'bookings:hotel_confirmation' b.booking_reference %}" class="btn btn-sm btn-outline-primary me-1">Receipt</a>
+                      {% if b.can_cancel %}
+                        <form action="{% url 'bookings:cancel_hotel_booking' b.id %}" method="POST" class="d-inline" onsubmit="return confirm('Cancel this hotel reservation?');">
+                          {% csrf_token %}
+                          <button type="submit" class="btn btn-sm btn-outline-danger">Cancel</button>
+                        </form>
+                      {% endif %}
+                    </td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        {% else %}
+          <p class="text-muted mb-0">No active hotel reservations. <a href="{% url 'hotels:list' %}" class="fw-bold">Explore Hotels</a></p>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- 3. Favorites Tab -->
+    <div class="tab-pane fade" id="favoritesTabContent" role="tabpanel">
+      <div class="row g-4">
+        {% for fav in favorites %}
+          <div class="col-md-4">
+            <div class="travel-card">
+              <div class="card-img-wrapper">
+                <img src="{{ fav.destination.display_image }}" alt="{{ fav.destination.name }}" class="travel-card-img">
+              </div>
+              <div class="card-body p-3 d-flex flex-column justify-content-between">
+                <div>
+                  <h6 class="fw-bold text-dark mb-1">{{ fav.destination.name }}</h6>
+                  <small class="text-muted d-block mb-2">{{ fav.destination.city.name }}, {{ fav.destination.country.name }}</small>
+                </div>
+                <div class="d-flex justify-content-between align-items-center pt-2 border-top mt-auto">
+                  <a href="{% url 'destinations:detail' fav.destination.id %}" class="btn btn-sm btn-primary-te">View Details</a>
+                  <a href="{% url 'destinations:toggle_favorite' fav.destination.id %}" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></a>
+                </div>
+              </div>
+            </div>
+          </div>
+        {% empty %}
+          <div class="col-12 text-center py-4 text-muted">
+            You haven't saved any favorite destinations yet. Explore and click the heart icon on any destination.
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- 4. Payments Tab -->
+    <div class="tab-pane fade" id="paymentsTabContent" role="tabpanel">
+      <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
+        <h5 class="fw-bold text-primary mb-3">Academic Simulated Payment Records</h5>
+        <div class="table-responsive">
+          <table class="table table-hover align-middle">
+            <thead class="table-light">
+              <tr>
+                <th>Transaction ID</th>
+                <th>Booking Ref</th>
+                <th>Booking Type</th>
+                <th>Amount</th>
+                <th>Method</th>
+                <th>Card Last 4</th>
+                <th>Status</th>
+                <th>Date</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for p in payments %}
+                <tr>
+                  <td><code>{{ p.transaction_id }}</code></td>
+                  <td><strong>{{ p.booking_reference }}</strong></td>
+                  <td><span class="badge bg-secondary">{{ p.get_booking_type_display }}</span></td>
+                  <td><span class="fw-bold text-success">${{ p.amount }} {{ p.currency }}</span></td>
+                  <td>{{ p.get_payment_method_display }}</td>
+                  <td>&bull;&bull;&bull;&bull; {{ p.card_last_four }}</td>
+                  <td><span class="badge bg-success">{{ p.get_status_display }}</span></td>
+                  <td><small class="text-muted">{{ p.created_at|date:"M d, Y H:i" }}</small></td>
+                </tr>
+              {% empty %}
+                <tr>
+                  <td colspan="8" class="text-center text-muted py-3">No payments recorded yet.</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

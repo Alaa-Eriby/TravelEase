@@ -1,0 +1,227 @@
+{% extends 'base.html' %}
+
+{% block title %}Book {{ package.title }} – TravelEase Reservation Wizard{% endblock %}
+
+{% block content %}
+<div class="py-4 bg-white border-bottom">
+  <div class="container">
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb mb-1 small">
+        <li class="breadcrumb-item"><a href="{% url 'core:home' %}">Home</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'packages:list' %}">Packages</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'packages:detail' package.id %}">{{ package.title|truncatechars:30 }}</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Reservation Wizard</li>
+      </ol>
+    </nav>
+    <h2 class="fw-bold text-dark mb-0">12-Step Package Reservation Workflow</h2>
+  </div>
+</div>
+
+<div class="container py-5">
+  <div class="row g-5">
+    <div class="col-lg-8">
+      <div class="card border-0 shadow-sm rounded-4 p-4 p-md-5 bg-white">
+        <form method="POST" id="bookingForm">
+          {% csrf_token %}
+
+          <!-- Step 1-4: Selected Package Header -->
+          <div class="p-3 bg-light rounded-3 border mb-4">
+            <div class="d-flex align-items-center">
+              <img src="{{ package.display_image }}" alt="{{ package.title }}" class="rounded-3 me-3" style="width: 80px; height: 80px; object-fit: cover;">
+              <div>
+                <span class="badge bg-secondary-subtle text-secondary small mb-1">{{ package.destination.name }}</span>
+                <h5 class="fw-bold text-dark mb-1">{{ package.title }}</h5>
+                <span class="text-muted small"><i class="bi bi-clock me-1"></i>{{ package.duration_days }} Days &bull; Base ${{ package.price_per_person }}/person</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 5: Select Departure Date -->
+          <div class="mb-4">
+            <h5 class="fw-bold text-primary mb-3">
+              <span class="badge bg-primary rounded-circle me-2">1</span> Select Departure Date
+            </h5>
+            <div class="row g-3">
+              {% for dep in departures %}
+                <div class="col-md-6">
+                  <div class="border rounded-3 p-3 departure-card cursor-pointer" onclick="selectDeparture({{ dep.id }}, {{ dep.current_price }}, {{ dep.available_seats }})" id="depCard_{{ dep.id }}">
+                    <div class="form-check">
+                      <input class="form-check-input" type="radio" name="departure_id" id="depRadio_{{ dep.id }}" value="{{ dep.id }}" required {% if forloop.first %}checked{% endif %}>
+                      <label class="form-check-label fw-bold text-dark" for="depRadio_{{ dep.id }}">
+                        {{ dep.departure_date|date:"M d, Y" }} &rarr; {{ dep.return_date|date:"M d, Y" }}
+                      </label>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mt-2 small">
+                      <span class="text-success"><i class="bi bi-people-fill me-1"></i>{{ dep.available_seats }} Seats Left</span>
+                      <span class="fw-bold text-primary">${{ dep.current_price }}</span>
+                    </div>
+                  </div>
+                </div>
+              {% empty %}
+                <div class="col-12 alert alert-warning">No departures available for this package.</div>
+              {% endfor %}
+            </div>
+          </div>
+
+          <!-- Step 6: Select Number of Travelers -->
+          <div class="mb-4">
+            <h5 class="fw-bold text-primary mb-3">
+              <span class="badge bg-primary rounded-circle me-2">2</span> Number of Travelers
+            </h5>
+            <div class="col-md-4">
+              <select name="travelers_count" id="travelersCountSelect" class="form-select form-select-lg fs-6" onchange="renderTravelerFields()">
+                <option value="1" selected>1 Traveler</option>
+                <option value="2">2 Travelers</option>
+                <option value="3">3 Travelers</option>
+                <option value="4">4 Travelers</option>
+                <option value="5">5 Travelers</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Step 7: Enter Traveler Information -->
+          <div class="mb-4">
+            <h5 class="fw-bold text-primary mb-3">
+              <span class="badge bg-primary rounded-circle me-2">3</span> Traveler Information Manifest
+            </h5>
+            <div id="travelersManifestContainer">
+              <!-- Dynamically populated via JavaScript -->
+            </div>
+          </div>
+
+          <!-- Special Requests -->
+          <div class="mb-4">
+            <h5 class="fw-bold text-primary mb-2">Special Requests (Optional)</h5>
+            <textarea name="special_requests" rows="2" class="form-control" placeholder="Dietary requirements, accessibility assistance, seating preferences..."></textarea>
+          </div>
+
+          <!-- Step 10: Simulated Safe Payment Checkout -->
+          <div class="mb-4 p-4 rounded-3 bg-light border">
+            <h5 class="fw-bold text-dark mb-2"><i class="bi bi-credit-card-2-front text-primary me-2"></i>Safe Academic Payment Simulation</h5>
+            <p class="text-muted small mb-3">
+              This reservation operates in Safe Academic Demonstration Mode. No actual funds are charged and real card credentials are never requested.
+            </p>
+            <div class="row g-3">
+              <div class="col-md-8">
+                <label class="form-label small fw-bold">Simulated Card Number</label>
+                <input type="text" name="card_number" class="form-control" value="4242 &bull;&bull;&bull;&bull; &bull;&bull;&bull;&bull; 4242" readonly>
+              </div>
+              <div class="col-md-4">
+                <label class="form-label small fw-bold">Expiry / CVV</label>
+                <input type="text" class="form-control" value="12/28 &bull; 123" readonly>
+              </div>
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-accent-te btn-lg w-100 fw-bold py-3">
+            <i class="bi bi-lock-fill me-2"></i> Confirm Reservation &amp; Generate Reference
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Step 8-9: Order Summary & Review -->
+    <div class="col-lg-4">
+      <div class="card border-0 shadow-sm rounded-4 p-4 bg-white sticky-top" style="top: 100px;">
+        <h5 class="fw-bold text-dark mb-3">Reservation Summary</h5>
+        
+        <div class="d-flex justify-content-between py-2 border-bottom">
+          <span class="text-muted">Package</span>
+          <span class="fw-bold text-end">{{ package.title|truncatechars:22 }}</span>
+        </div>
+        <div class="d-flex justify-content-between py-2 border-bottom">
+          <span class="text-muted">Unit Rate</span>
+          <span class="fw-bold" id="summaryUnitPrice">${{ package.price_per_person }}</span>
+        </div>
+        <div class="d-flex justify-content-between py-2 border-bottom">
+          <span class="text-muted">Travelers</span>
+          <span class="fw-bold" id="summaryCount">1</span>
+        </div>
+        <div class="d-flex justify-content-between py-3 border-bottom">
+          <span class="h5 fw-bold text-dark mb-0">Total Price</span>
+          <span class="h4 fw-bold text-primary mb-0" id="summaryTotalPrice">${{ package.price_per_person }}</span>
+        </div>
+
+        <div class="mt-4 small text-muted">
+          <div class="d-flex align-items-center mb-2">
+            <i class="bi bi-shield-check text-success fs-5 me-2"></i>
+            <span>Instant Capacity Verification</span>
+          </div>
+          <div class="d-flex align-items-center mb-2">
+            <i class="bi bi-arrow-counterclockwise text-primary fs-5 me-2"></i>
+            <span>Flexible Cancellation Policy</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  let currentUnitPrice = {{ package.price_per_person }};
+
+  function selectDeparture(depId, price, seats) {
+    currentUnitPrice = price;
+    const radios = document.getElementsByName('departure_id');
+    for (let r of radios) {
+      if (r.value == depId) r.checked = true;
+    }
+    updateSummary();
+  }
+
+  function renderTravelerFields() {
+    const count = parseInt(document.getElementById('travelersCountSelect').value);
+    const container = document.getElementById('travelersManifestContainer');
+    container.innerHTML = '';
+
+    for (let i = 1; i <= count; i++) {
+      const card = document.createElement('div');
+      card.className = 'border rounded-3 p-3 mb-3 bg-light';
+      card.innerHTML = `
+        <h6 class="fw-bold text-secondary mb-3">Traveler #${i} Details</h6>
+        <div class="row g-3">
+          <div class="col-md-4">
+            <label class="form-label small fw-semibold">First Name *</label>
+            <input type="text" name="first_name_${i}" class="form-control" required value="${i === 1 ? '{{ user.first_name }}' : ''}">
+          </div>
+          <div class="col-md-4">
+            <label class="form-label small fw-semibold">Last Name *</label>
+            <input type="text" name="last_name_${i}" class="form-control" required value="${i === 1 ? '{{ user.last_name }}' : ''}">
+          </div>
+          <div class="col-md-4">
+            <label class="form-label small fw-semibold">Passport Number</label>
+            <input type="text" name="passport_${i}" class="form-control" placeholder="Passport No.">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label small fw-semibold">Age</label>
+            <input type="number" name="age_${i}" class="form-control" value="28" min="1" max="120">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label small fw-semibold">Gender</label>
+            <select name="gender_${i}" class="form-select">
+              <option value="M">Male</option>
+              <option value="F">Female</option>
+              <option value="O">Other</option>
+            </select>
+          </div>
+        </div>
+      `;
+      container.appendChild(card);
+    }
+    updateSummary();
+  }
+
+  function updateSummary() {
+    const count = parseInt(document.getElementById('travelersCountSelect').value);
+    const total = currentUnitPrice * count;
+    document.getElementById('summaryUnitPrice').innerText = `$${currentUnitPrice.toFixed(2)}`;
+    document.getElementById('summaryCount').innerText = count;
+    document.getElementById('summaryTotalPrice').innerText = `$${total.toFixed(2)}`;
+  }
+
+  // Initial trigger
+  document.addEventListener('DOMContentLoaded', function () {
+    renderTravelerFields();
+  });
+</script>
+{% endblock %}

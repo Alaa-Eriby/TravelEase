@@ -1,0 +1,222 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}TravelEase – Smart Travel & Tourism Booking System{% endblock %}</title>
+
+  <!-- Google Fonts: Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <!-- Custom Stylesheet -->
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+  {% block extra_head %}{% endblock %}
+</head>
+<body>
+
+  <!-- Top Academic Course Evaluation Notice -->
+  <div class="academic-notice">
+    <div class="container d-flex justify-content-between align-items-center">
+      <span><i class="bi bi-mortarboard-fill me-1"></i> Software Construction University Project – Full Practical Implementation &amp; Live Evaluation System</span>
+      <span class="d-none d-md-inline"><i class="bi bi-shield-check me-1"></i> Safe Academic Demonstration Mode</span>
+    </div>
+  </div>
+
+  <!-- Main Navigation -->
+  <nav class="navbar navbar-expand-lg navbar-travelease sticky-top">
+    <div class="container">
+      <a class="navbar-brand d-flex align-items-center" href="{% url 'core:home' %}">
+        <i class="bi bi-compass-fill me-2 text-warning fs-3"></i>
+        <span>Travel<span class="text-warning">Ease</span></span>
+      </a>
+
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarContent">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
+          <li class="nav-item">
+            <a class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}" href="{% url 'core:home' %}">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link {% if 'destinations' in request.path %}active{% endif %}" href="{% url 'destinations:list' %}">Destinations</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link {% if 'packages' in request.path %}active{% endif %}" href="{% url 'packages:list' %}">Travel Packages</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link {% if 'hotels' in request.path %}active{% endif %}" href="{% url 'hotels:list' %}">Hotels</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link {% if request.resolver_match.url_name == 'about' %}active{% endif %}" href="{% url 'core:about' %}">About Us</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link {% if request.resolver_match.url_name == 'contact' %}active{% endif %}" href="{% url 'core:contact' %}">Contact</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link text-primary" href="/api/docs/" target="_blank" title="Interactive OpenAPI / Swagger Documentation">
+              <i class="bi bi-code-slash me-1"></i>Swagger API
+            </a>
+          </li>
+        </ul>
+
+        <!-- User Authentication & Profile Controls -->
+        <div class="d-flex align-items-center">
+          {% if user.is_authenticated %}
+            <!-- Notifications Dropdown -->
+            <div class="dropdown me-3">
+              <button class="btn btn-light rounded-circle position-relative" type="button" data-bs-toggle="dropdown" aria-expanded="false" title="Notifications">
+                <i class="bi bi-bell-fill text-muted fs-5"></i>
+                {% if unread_notifications_count > 0 %}
+                  <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                    {{ unread_notifications_count }}
+                  </span>
+                {% endif %}
+              </button>
+              <ul class="dropdown-menu dropdown-menu-end shadow border-0 p-2" style="width: 290px;">
+                <li class="dropdown-header fw-bold text-dark">Notifications</li>
+                <li><hr class="dropdown-divider"></li>
+                {% for notif in recent_notifications %}
+                  <li class="p-2 border-bottom">
+                    <small class="fw-bold d-block">{{ notif.title }}</small>
+                    <small class="text-muted">{{ notif.message|truncatechars:70 }}</small>
+                  </li>
+                {% empty %}
+                  <li class="p-2 text-center text-muted small">No recent notifications</li>
+                {% endfor %}
+              </ul>
+            </div>
+
+            <!-- User Menu -->
+            <div class="dropdown">
+              <button class="btn btn-outline-te dropdown-toggle d-flex align-items-center gap-2" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="bi bi-person-circle fs-5"></i>
+                <span>{{ user.first_name|default:user.username }}</span>
+                <span class="badge bg-secondary ms-1">{{ user.get_role_display }}</span>
+              </button>
+              <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2">
+                {% if user.is_customer %}
+                  <li><a class="dropdown-item fw-semibold" href="{% url 'bookings:customer_dashboard' %}"><i class="bi bi-speedometer2 me-2 text-primary"></i>My Dashboard</a></li>
+                {% elif user.is_agent %}
+                  <li><a class="dropdown-item fw-semibold" href="{% url 'core:agent_dashboard' %}"><i class="bi bi-briefcase me-2 text-success"></i>Agent Portal</a></li>
+                {% elif user.is_administrator %}
+                  <li><a class="dropdown-item fw-semibold" href="{% url 'core:admin_dashboard' %}"><i class="bi bi-shield-lock me-2 text-danger"></i>Admin Panel</a></li>
+                {% endif %}
+                <li><a class="dropdown-item" href="{% url 'accounts:profile' %}"><i class="bi bi-person-gear me-2"></i>Account Profile</a></li>
+                {% if user.is_staff or user.is_superuser %}
+                  <li><a class="dropdown-item" href="/admin/" target="_blank"><i class="bi bi-sliders me-2"></i>Django Admin</a></li>
+                {% endif %}
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item text-danger fw-semibold" href="{% url 'accounts:logout' %}"><i class="bi bi-box-arrow-right me-2"></i>Sign Out</a></li>
+              </ul>
+            </div>
+          {% else %}
+            <a href="{% url 'accounts:login' %}" class="btn btn-link text-decoration-none fw-semibold me-2 text-dark">Sign In</a>
+            <a href="{% url 'accounts:register' %}" class="btn btn-accent-te">Join TravelEase</a>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Flash Messages -->
+  <div class="container mt-3">
+    {% if messages %}
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show shadow-sm" role="alert">
+          <i class="bi bi-info-circle-fill me-2"></i>
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      {% endfor %}
+    {% endif %}
+  </div>
+
+  <!-- Content Block -->
+  <main>
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <div class="row g-4 mb-4">
+        <div class="col-lg-4 col-md-6">
+          <h5 class="d-flex align-items-center">
+            <i class="bi bi-compass-fill me-2 text-warning fs-4"></i>
+            Travel<span class="text-warning">Ease</span>
+          </h5>
+          <p class="text-secondary small">
+            TravelEase is a smart travel and tourism management platform developed as a comprehensive Software Construction course practical capstone system.
+          </p>
+          <div class="mt-3">
+            <a href="#" class="social-btn"><i class="bi bi-facebook"></i></a>
+            <a href="#" class="social-btn"><i class="bi bi-twitter-x"></i></a>
+            <a href="#" class="social-btn"><i class="bi bi-instagram"></i></a>
+            <a href="#" class="social-btn"><i class="bi bi-linkedin"></i></a>
+            <a href="https://github.com" target="_blank" class="social-btn"><i class="bi bi-github"></i></a>
+          </div>
+        </div>
+
+        <div class="col-lg-2 col-md-3 col-6">
+          <h5>Quick Explore</h5>
+          <ul class="list-unstyled small">
+            <li class="mb-2"><a href="{% url 'destinations:list' %}">All Destinations</a></li>
+            <li class="mb-2"><a href="{% url 'packages:list' %}">Featured Packages</a></li>
+            <li class="mb-2"><a href="{% url 'hotels:list' %}">Hotels &amp; Resorts</a></li>
+            <li class="mb-2"><a href="{% url 'core:about' %}">About TravelEase</a></li>
+            <li class="mb-2"><a href="{% url 'core:contact' %}">Support &amp; Contact</a></li>
+          </ul>
+        </div>
+
+        <div class="col-lg-2 col-md-3 col-6">
+          <h5>Role Portals</h5>
+          <ul class="list-unstyled small">
+            <li class="mb-2"><a href="{% url 'bookings:customer_dashboard' %}">Traveler Dashboard</a></li>
+            <li class="mb-2"><a href="{% url 'core:agent_dashboard' %}">Travel Agent Portal</a></li>
+            <li class="mb-2"><a href="{% url 'core:admin_dashboard' %}">Administration Panel</a></li>
+            <li class="mb-2"><a href="/api/docs/" target="_blank">Swagger OpenAPI Docs</a></li>
+            <li class="mb-2"><a href="/admin/" target="_blank">Django Admin Backend</a></li>
+          </ul>
+        </div>
+
+        <div class="col-lg-4 col-md-12">
+          <h5>Software Construction Evaluation</h5>
+          <p class="text-secondary small mb-2">
+            <strong>Architecture:</strong> Django 5 + Django REST Framework + PostgreSQL / SQLite + Bootstrap 5.
+          </p>
+          <p class="text-secondary small mb-3">
+            <strong>Demonstration Mode:</strong> Includes concurrency-safe transaction locks, automated seed fixtures, simulated payment ledger, and complete unit/integration tests.
+          </p>
+          <div class="d-flex align-items-center text-light small">
+            <i class="bi bi-geo-alt-fill text-warning me-2"></i>
+            <span>Live Demonstration Server: <code>http://localhost:8000/</code></span>
+          </div>
+        </div>
+      </div>
+
+      <hr class="border-secondary opacity-25">
+
+      <div class="d-flex flex-column flex-md-row justify-content-between align-items-center py-2 text-secondary small">
+        <p class="mb-0">&copy; 2026 TravelEase System. Developed for Software Construction Course Practical Implementation.</p>
+        <p class="mb-0 text-md-end">All rights reserved &bull; Full-Stack University Project</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Bootstrap 5 Bundle JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Custom JS -->
+  <script src="{% static 'js/main.js' %}"></script>
+  {% block extra_js %}{% endblock %}
+</body>
+</html>

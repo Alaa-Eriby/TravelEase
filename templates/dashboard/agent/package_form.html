@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+
+{% block title %}{% if is_edit %}Edit Package{% else %}Create Package{% endif %} – Travel Agent Portal{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-9">
+      <div class="card border-0 shadow-sm rounded-4 p-4 p-md-5 bg-white">
+        <h3 class="fw-bold text-primary mb-4">
+          <i class="bi bi-briefcase me-2"></i>{% if is_edit %}Edit Package: {{ package.title }}{% else %}Publish New Travel Package{% endif %}
+        </h3>
+
+        <form method="POST">
+          {% csrf_token %}
+          <div class="row g-3">
+            <div class="col-md-8">
+              <label class="form-label fw-semibold">Package Title <span class="text-danger">*</span></label>
+              <input type="text" name="title" class="form-control form-control-lg fs-6" required placeholder="e.g. 7-Day Swiss Alps Grand Expedition" value="{{ package.title|default:'' }}">
+            </div>
+            <div class="col-md-4">
+              <label class="form-label fw-semibold">Destination <span class="text-danger">*</span></label>
+              <select name="destination" class="form-select form-select-lg fs-6" required>
+                {% for d in destinations %}
+                  <option value="{{ d.id }}" {% if package.destination_id == d.id %}selected{% endif %}>{{ d.name }}</option>
+                {% endfor %}
+              </select>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Duration (Days) <span class="text-danger">*</span></label>
+              <input type="number" name="duration_days" class="form-control" required value="{{ package.duration_days|default:5 }}" min="1">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Base Price Per Traveler ($ USD) <span class="text-danger">*</span></label>
+              <input type="number" step="0.01" name="price_per_person" class="form-control" required value="{{ package.price_per_person|default:'1500.00' }}">
+            </div>
+
+            <div class="col-12">
+              <label class="form-label fw-semibold">Detailed Description <span class="text-danger">*</span></label>
+              <textarea name="description" rows="4" class="form-control" required placeholder="Describe the day-by-day travel itinerary...">{{ package.description|default:'' }}</textarea>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Included Services (Comma separated) <span class="text-danger">*</span></label>
+              <textarea name="included_services" rows="3" class="form-control" required placeholder="4-Star Hotel, Breakfast, Tour Guide, Airport Transfer">{{ package.included_services|default:'' }}</textarea>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Excluded Services</label>
+              <textarea name="excluded_services" rows="3" class="form-control" placeholder="Visa fees, Travel insurance, Personal items">{{ package.excluded_services|default:'' }}</textarea>
+            </div>
+
+            <div class="col-12">
+              <label class="form-label fw-semibold">Photograph URL</label>
+              <input type="url" name="image_url" class="form-control" placeholder="https://images.unsplash.com/..." value="{{ package.image_url|default:'' }}">
+            </div>
+
+            {% if not is_edit %}
+              <div class="col-12 mt-4">
+                <h5 class="fw-bold text-dark border-bottom pb-2">Initial Departure Date (Optional)</h5>
+              </div>
+              <div class="col-md-4">
+                <label class="form-label small fw-semibold">Departure Date</label>
+                <input type="date" name="departure_date" class="form-control">
+              </div>
+              <div class="col-md-4">
+                <label class="form-label small fw-semibold">Return Date</label>
+                <input type="date" name="return_date" class="form-control">
+              </div>
+              <div class="col-md-4">
+                <label class="form-label small fw-semibold">Max Capacity</label>
+                <input type="number" name="capacity" class="form-control" value="20">
+              </div>
+            {% else %}
+              <div class="col-12 mt-3">
+                <div class="form-check form-switch">
+                  <input class="form-check-input" type="checkbox" name="is_active" id="isActiveCheck" {% if package.is_active %}checked{% endif %}>
+                  <label class="form-check-label fw-semibold" for="isActiveCheck">Package is Active for Public Booking</label>
+                </div>
+              </div>
+            {% endif %}
+
+            <div class="col-12 mt-4 d-flex justify-content-between">
+              <a href="{% url 'core:agent_dashboard' %}" class="btn btn-outline-secondary">Cancel</a>
+              <button type="submit" class="btn btn-accent-te btn-lg">
+                <i class="bi bi-cloud-arrow-up-fill me-2"></i> Save Travel Package
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
