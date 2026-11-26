@@ -1,23 +1,98 @@
-# TravelEase – Smart Travel and Tourism Booking System
-## Software Construction Course – Complete Practical Implementation Capstone
+# 🌍 TravelEase – Smart Travel & Tourism Booking System
+> **An enterprise-grade, concurrency-safe travel and tourism booking web platform built with Django 5, Django REST Framework, and PostgreSQL / SQLite.**
 
-[![Django](https://img.shields.io/badge/Django-5.2-green.svg)](https://www.djangoproject.com/)
+[![Django](https://img.shields.io/badge/Django-5.2-green.svg?logo=django)](https://www.djangoproject.com/)
 [![DRF](https://img.shields.io/badge/DRF-3.18-red.svg)](https://www.django-rest-framework.org/)
-[![PostgreSQL](https://img.shields.io/badge/Database-PostgreSQL%20%7C%20SQLite-blue.svg)](https://www.postgresql.org/)
-[![OpenAPI](https://img.shields.io/badge/OpenAPI-3.0%20Swagger-brightgreen.svg)](http://localhost:8000/api/docs/)
+[![Python](https://img.shields.io/badge/Python-3.10%2B-blue.svg?logo=python)](https://www.python.org/)
+[![Database](https://img.shields.io/badge/Database-PostgreSQL%20%7C%20SQLite-4169E1.svg?logo=postgresql)](https://www.postgresql.org/)
+[![OpenAPI](https://img.shields.io/badge/OpenAPI-3.0%20Swagger-85EA2D.svg?logo=swagger)](http://localhost:8000/api/docs/)
 [![Tests](https://img.shields.io/badge/Tests-19%20Passed%20(100%25)-success.svg)](docs/TESTING_REPORT.md)
+[![License](https://img.shields.io/badge/License-MIT-lightgrey.svg)](LICENSE)
 
 ---
 
-### 1. Project Concept & Executive Summary
+## 📖 Overview | نظرة عامة
 
-**TravelEase** is an enterprise-grade travel and tourism booking web application developed for the university Software Construction course. It delivers a genuinely functional, database-connected commercial platform that connects travelers with licensed tourism service providers and central administrators.
+**TravelEase** is an enterprise-grade travel and tourism booking web platform developed as a Software Construction capstone. It provides a robust, commercially structured, database-driven service connecting travelers with certified tour operators and centralized system administrators.
 
-The system features real concurrency-safe capacity locks, dynamic room inventory tracking, an academic safe payment ledger, and dedicated role portals for **Customers**, **Travel Agents**, and **Platform Administrators**.
+Key engineering highlights include:
+- **Concurrency-Safe Bookings**: Strict database row-level locking (`select_for_update`) to prevent overbooking on concurrent departure reservations.
+- **Dynamic Hotel Availability**: Exact date-range overlap validation algorithms ensuring zero double-bookings.
+- **Academic Payment Gateway**: Deterministic, audit-tracked simulated payment ledger.
+- **Dual Presentation**: Fully featured server-rendered Bootstrap 5 web interface + RESTful JSON APIs with interactive Swagger/ReDoc.
 
 ---
 
-### 2. High-Level System Architecture Diagram
+## 📑 Table of Contents
+
+- [Key Features](#-key-features)
+- [Role-Based Portals](#-role-based-portals)
+- [User Interface Showcase](#-user-interface-showcase)
+- [System Architecture & UML](#-system-architecture--uml)
+- [Technology Stack](#-technology-stack)
+- [Quick Start & Installation](#-quick-start--installation)
+- [Demonstration Accounts](#-demonstration-accounts)
+- [REST API & Swagger](#-rest-api--swagger)
+- [Automated Testing](#-automated-testing)
+- [Project Documentation](#-project-documentation)
+
+---
+
+## ✨ Key Features
+
+| Feature | Description |
+|---|---|
+| **Multi-Step Package Wizard** | Smooth booking flow with real-time price calculation, passenger manifest collection, and instant receipt generation. |
+| **Room Inventory Management** | Real-time calculation of available hotel rooms for specific check-in / check-out ranges. |
+| **Concurrency Lock Mechanism** | Guaranteed capacity checks using atomic database transactions to eliminate race conditions. |
+| **Audit Trails & Security** | Comprehensive administrative audit log capturing all high-risk operations and booking updates. |
+| **RESTful API** | Clean endpoints for destinations, packages, hotels, and reservations with OpenAPI 3.0 schema. |
+
+---
+
+## 👥 Role-Based Portals
+
+```
+┌────────────────────────────────────────────────────────────────────────┐
+│                        TravelEase Architecture                         │
+├────────────────────┬────────────────────┬──────────────────────────────┤
+│  👤 Customer       │  🏢 Travel Agent   │  🛡️ Platform Administrator    │
+├────────────────────┼────────────────────┼──────────────────────────────┤
+│ • Explore places   │ • Publish packages │ • Financial KPI analytics    │
+│ • Book packages    │ • Track departures │ • System-wide bookings log   │
+│ • Reserve rooms    │ • View manifests   │ • User & agent verification  │
+│ • Printable ticket │ • Manage bookings  │ • Security audit trail       │
+└────────────────────┴────────────────────┴──────────────────────────────┘
+```
+
+---
+
+## 🖼️ User Interface Showcase
+
+<div align="center">
+
+### Home Page & Destinations
+| Home Page | Destinations Catalog |
+|:---:|:---:|
+| ![Home Page](docs/screenshots/01_home_page.png) | ![Destinations Page](docs/screenshots/02_destinations_page.png) |
+
+### Packages & Booking Experience
+| Travel Packages | Booking Confirmation |
+|:---:|:---:|
+| ![Packages Page](docs/screenshots/03_packages_page.png) | ![Booking Confirmation](docs/screenshots/09_booking_confirmation.png) |
+
+### Dedicated Role Dashboards
+| Customer Dashboard | Agent Dashboard | Admin Analytics |
+|:---:|:---:|:---:|
+| ![Customer](docs/screenshots/07_customer_dashboard.png) | ![Agent](docs/screenshots/10_agent_dashboard.png) | ![Admin](docs/screenshots/11_admin_dashboard.png) |
+
+</div>
+
+---
+
+## 📐 System Architecture & UML
+
+### High-Level System Architecture
 
 ```mermaid
 flowchart TD
@@ -57,9 +132,8 @@ flowchart TD
     ServiceLayer --> DataStorageLayer
 ```
 
----
-
-### 3. Use Case Diagram
+<details>
+<summary><b>🔍 Click to view Use Case Diagram</b></summary>
 
 ```mermaid
 flowchart LR
@@ -72,7 +146,7 @@ flowchart LR
     subgraph SystemUseCases ["TravelEase Platform Functions"]
         UC1["Search & Filter Destinations"]
         UC2["Browse Travel Packages & Inclusions"]
-        UC3["Execute 12-Step Package Booking"]
+        UC3["Execute Multi-Step Package Booking"]
         UC4["Reserve Hotel Room (Overlap Checked)"]
         UC5["View Booking History & Receipts"]
         UC6["Cancel Booking (Release Seats)"]
@@ -99,10 +173,10 @@ flowchart LR
     ADM --> UC11
     ADM --> UC12
 ```
+</details>
 
----
-
-### 4. Class Diagram
+<details>
+<summary><b>🔍 Click to view Class Diagram</b></summary>
 
 ```mermaid
 classDiagram
@@ -189,18 +263,18 @@ classDiagram
 
     User "1" --> "1" Destination : favorites
     User "1" --> "*" PackageBooking : places
-    TravelPackage "1" --> "*" PackageDeparture : schedules
-    PackageDeparture "1" --> "*" PackageBooking : books
-    PackageBooking "1" --> "*" Traveler : manifests
+    TravelPackage "1" --> "*" PackageDeparture : offers
+    PackageDeparture "1" --> "*" PackageBooking : schedules
+    PackageBooking "1" --> "*" Traveler : includes
     PackageBooking "1" --> "1" PaymentRecord : settles
     Hotel "1" --> "*" HotelRoom : supplies
     HotelRoom "1" --> "*" HotelBooking : reserves
     HotelBooking "1" --> "1" PaymentRecord : settles
 ```
+</details>
 
----
-
-### 5. Sequence Diagram: Concurrency-Safe Travel Package Booking
+<details>
+<summary><b>🔍 Click to view Sequence Diagram (Concurrency-Safe Booking)</b></summary>
 
 ```mermaid
 sequenceDiagram
@@ -233,10 +307,10 @@ sequenceDiagram
         View-->>UI: Return error alert: "Only X seats remain on this departure"
     end
 ```
+</details>
 
----
-
-### 6. Activity Diagram: Travel Booking Lifecycle
+<details>
+<summary><b>🔍 Click to view Activity Diagram (Booking Lifecycle)</b></summary>
 
 ```mermaid
 flowchart TD
@@ -265,60 +339,118 @@ flowchart TD
     RestoreSeats --> MarkCancelled[Update Status: CANCELLED]
     MarkCancelled --> EndTrip
 ```
+</details>
 
 ---
 
-### 7. Technology Stack
-- **Backend Framework:** Python 3.10+, Django 5.x, Django REST Framework 3.18.
-- **API Documentation:** `drf-spectacular` (OpenAPI 3.0 / Swagger UI / ReDoc).
-- **Frontend Stack:** HTML5, CSS3, Bootstrap 5.3, Bootstrap Icons, Custom Visual Identity (Inter & Plus Jakarta Sans typography, deep navy `#0f2444`, turquoise `#0891b2`, warm orange `#f97316`).
-- **Database:** PostgreSQL 15+ (Production / Docker) & SQLite3 (instant zero-configuration local runs).
-- **Deployment:** Docker & Docker Compose (`docker-compose.yml`), Gunicorn, Nginx.
-- **Testing:** Django Test Suite & `pytest` (19 automated unit & integration test cases with 100% pass rate).
+## 🛠️ Technology Stack
+
+- **Backend:** Python 3.10+, Django 5.x, Django REST Framework 3.18
+- **Database:** PostgreSQL 15+ (Production / Docker) & SQLite3 (Development)
+- **API Documentation:** `drf-spectacular` (OpenAPI 3.0 / Swagger UI / ReDoc)
+- **Frontend:** HTML5, CSS3, JavaScript, Bootstrap 5.3, Bootstrap Icons
+- **Typography & Brand:** Inter & Plus Jakarta Sans, Deep Navy (`#0f2444`), Turquoise (`#0891b2`), Warm Orange (`#f97316`)
+- **DevOps & Containers:** Docker, Docker Compose, Gunicorn, Nginx
+- **Testing:** Django Test Suite, `pytest` (19 automated tests, 100% pass)
 
 ---
 
-### 8. Installation & Quick Start
+## 🚀 Quick Start & Installation
 
-```powershell
-# 1. Activate virtual environment
-.\venv\Scripts\activate
+### Option A: One-Click Script (Windows)
+Simply run the included helper batch file:
+```cmd
+setup_and_run.bat
+```
+This automatically verifies Python, creates the virtual environment, installs dependencies, runs migrations, and opens the application in your browser.
 
-# 2. Run database migrations
+### Option B: Manual Setup
+```bash
+# 1. Clone the repository
+git clone https://github.com/Alaa-Eriby/TravelEase.git
+cd TravelEase
+
+# 2. Create and activate virtual environment
+python -m venv venv
+# On Windows:
+venv\Scripts\activate
+# On Linux/macOS:
+source venv/bin/activate
+
+# 3. Install dependencies
+pip install -r requirements.txt
+
+# 4. Run database migrations
 python manage.py migrate
 
-# 3. Seed demonstration database
+# 5. Populate sample demonstration data
 python manage.py seed_data
 
-# 4. Start local development server
+# 6. Start development server
 python manage.py runserver 127.0.0.1:8000
 ```
-Open **`http://localhost:8000/`** in your browser.
+Visit **`http://127.0.0.1:8000/`** in your browser.
+
+### Option C: Docker Deployment
+```bash
+docker-compose up --build
+```
 
 ---
 
-### 9. Demonstration Credentials
-- **Administrator:** `admin` / `AdminPass123!`
-- **Travel Agent:** `agent_sarah` / `AgentPass123!`
-- **Traveler:** `traveler_john` / `TravelerPass123!`
+## 🔑 Demonstration Accounts
+
+The platform includes pre-configured demo accounts loaded via `python manage.py seed_data`:
+
+| Role | Username | Password | Access Scope |
+|---|---|---|---|
+| 🛡️ **Administrator** | `admin` | `AdminPass123!` | Full control, financial KPIs, user roles & audit logs |
+| 🏢 **Travel Agent** | `agent_sarah` | `AgentPass123!` | Package management, manifests & reservation updates |
+| 👤 **Traveler / Customer** | `traveler_john` | `TravelerPass123!` | Destination browsing, booking wizard & receipts |
 
 ---
 
-### 10. Automated Test Results
-Run the test suite with:
-```powershell
+## 📡 REST API & Swagger
+
+TravelEase exposes full REST APIs with interactive documentation:
+
+- **Swagger UI:** [`http://127.0.0.1:8000/api/docs/`](http://127.0.0.1:8000/api/docs/)
+- **ReDoc:** [`http://127.0.0.1:8000/api/redoc/`](http://127.0.0.1:8000/api/redoc/)
+- **OpenAPI Schema:** Generated via `schema.yml`
+
+---
+
+## 🧪 Automated Testing
+
+Run the full automated test suite covering authentication, concurrency locks, booking wizards, and API endpoints:
+```bash
 python manage.py test
 ```
-**Results:** `Ran 19 tests in 69s. OK (19 passed, 0 failed)`.
+```
+Found 19 test(s).
+System check identified no issues (0 silenced).
+...................
+----------------------------------------------------------------------
+Ran 19 tests in 69.412s
+
+OK (19 passed, 0 failed)
+```
 
 ---
 
-### 11. Documentation Pointers
-- **[Installation Guide](INSTALLATION.md)**
-- **[Database Documentation & ERD](docs/DATABASE_DOCUMENTATION.md)**
-- **[API Documentation & Swagger](docs/API_DOCUMENTATION.md)**
-- **[Testing & QA Report](docs/TESTING_REPORT.md)**
-- **[User Guide & Demonstration Steps](docs/USER_GUIDE.md)**
-- **[Deployment & Docker Guide](docs/DEPLOYMENT_GUIDE.md)**
-#   T r a v e l E a s e  
- 
+## 📚 Project Documentation
+
+Detailed technical documentation is available in the [`docs/`](docs/) directory:
+
+- 📘 **[Installation Guide](INSTALLATION.md)** — Comprehensive setup instructions
+- 🗄️ **[Database Documentation & ERD](docs/DATABASE_DOCUMENTATION.md)** — Relational schemas and data dictionary
+- 🔌 **[API Documentation](docs/API_DOCUMENTATION.md)** — Endpoint definitions and payload samples
+- 🧪 **[Testing & QA Report](docs/TESTING_REPORT.md)** — Test cases and verification evidence
+- 📖 **[User Guide](docs/USER_GUIDE.md)** — Step-by-step role walkthroughs
+- 🐳 **[Deployment & Docker Guide](docs/DEPLOYMENT_GUIDE.md)** — Production deployment workflows
+
+---
+
+<div align="center">
+  <sub>TravelEase • Software Construction Course Capstone • Developed with ❤️</sub>
+</div>
