@@ -50,4 +50,6 @@ media/
 *.rar
 *.tar.gz
 web_static/
+push_project.bat
+
 
